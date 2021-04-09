@@ -1,0 +1,12 @@
+﻿@model List<GroupViewModel>
+
+@{int index = 0;}
+
+@foreach (GroupViewModel group in Model)
+{
+    <section>
+        @group.Name
+        @{index++;}
+    </section>
+}
+<p>This is the groups page.</p>

@@ -1,0 +1,14 @@
+﻿@model List<GiftViewModel>
+
+@{int index = 0;}
+
+@foreach (GiftViewModel gift in Model)
+{
+    <section>
+        @gift.Title - P:@gift.Priority
+        @gift.Description
+        @gift.URL
+        @{index++;}
+    </section>
+}
+<p>This is the gifts page.</p>

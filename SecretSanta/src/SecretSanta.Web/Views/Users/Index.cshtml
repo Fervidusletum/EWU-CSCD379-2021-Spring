@@ -1,0 +1,12 @@
+﻿@model List<UserViewModel>
+
+@{int index = 0;}
+
+@foreach (UserViewModel user in Model)
+{
+    <section>
+        @user.ToString()
+        @{index++;}
+    </section>
+}
+<p>This is the users page.</p>
