@@ -1,0 +1,38 @@
+{
+  "name": "secretsanta.web",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "build:dev": "webpack --mode development",
+    "build:prod": "export NODE_ENV=production && webpack --mode production"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "tailwindcss": "2.0.4"
+  },
+  "devDependencies": {
+    "autoprefixer": "10.0.1",
+    "clean-webpack-plugin": "3.0.0",
+    "copy-webpack-plugin": "6.4.0",
+    "css-loader": "5.0.1",
+    "expose-loader": "1.0.1",
+    "fibers": "5.0.0",
+    "html-webpack-plugin": "4.5.0",
+    "mini-css-extract-plugin": "1.2.1",
+    "postcss": "8.1.14",
+    "postcss-loader": "4.1.0",
+    "sass": "1.27.0",
+    "style-loader": "2.0.0",
+    "stylelint": "13.7.2",
+    "stylelint-config-recommended": "3.0.0",
+    "stylelint-config-standard": "20.0.0",
+    "stylelint-declaration-block-no-ignored-properties": "2.3.0",
+    "stylelint-order": "4.1.0",
+    "stylelint-scss": "3.18.0",
+    "ts-loader": "8.0.7",
+    "typescript": "4.0.5",
+    "webpack": "5.10.1",
+    "webpack-cli": "4.2.0"
+  }
+}
