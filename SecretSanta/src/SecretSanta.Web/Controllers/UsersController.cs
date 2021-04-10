@@ -37,5 +37,10 @@ namespace SecretSanta.Web.Controllers
 
             return View(viewModel);
         }
+
+        public IActionResult Edit(int id)
+        {
+            return View(Users[id]);
+        }
     }
 }
