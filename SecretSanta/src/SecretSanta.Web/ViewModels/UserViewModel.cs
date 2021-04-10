@@ -18,6 +18,6 @@ namespace SecretSanta.Web.ViewModels
         [Display(Name = "Last Name")]
         public string LastName { get; set; } = "";
 
-        public override string ToString() => FirstName + " " + LastName;
+        public string FullName { get => $"{FirstName} {LastName}"; }
     }
 }

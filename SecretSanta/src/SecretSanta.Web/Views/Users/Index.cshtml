@@ -5,8 +5,9 @@
 @foreach (UserViewModel user in Model)
 {
     <section>
-        @user.ToString()
+        @user.FullName
         @{index++;}
     </section>
 }
+<a asp-controller="Users" asp-action="Create">Create</a>
 <p>This is the users page.</p>

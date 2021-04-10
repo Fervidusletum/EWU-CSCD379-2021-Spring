@@ -15,14 +15,14 @@ namespace SecretSanta.Web.ViewModels
         public string Title { get; set; } = "";
 
         [Display(Name="Description")]
-        public string Description { get; set; } = "";
+        public string? Description { get; set; } = "";
 
         [Display(Name="URL")]
         [Url]
-        public string URL { get; set; } = "";
+        public string? URL { get; set; } = "";
 
         [Display(Name = "Priority")]
         [RegularExpression("^[0-9]+$")] // restrict to ints
-        public int Priority { get; set; } = 0;
+        public int? Priority { get; set; } = 0;
     }
 }
