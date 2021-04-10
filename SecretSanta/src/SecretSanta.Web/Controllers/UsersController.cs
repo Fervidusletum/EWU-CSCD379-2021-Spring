@@ -4,21 +4,15 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SecretSanta.Web.ViewModels;
+using SecretSanta.Web.Data;
 
 namespace SecretSanta.Web.Controllers
 {
     public class UsersController : Controller
     {
-        // move into dummy data folder later
-        public static List<UserViewModel> Users = new()
-        {
-            new UserViewModel {Id=0, FirstName="Mario", LastName="Mario"},
-            new UserViewModel {Id=1, FirstName="Luigi", LastName="Mario"}
-        };
-
         public IActionResult Index()
         {
-            return View(Users);
+            return View(MockData.Users);
         }
 
         public IActionResult Create()
@@ -31,7 +25,7 @@ namespace SecretSanta.Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                Users.Add(viewModel);
+                MockData.Users.Add(viewModel);
                 return RedirectToAction(nameof(Index));
             }
 
@@ -40,7 +34,18 @@ namespace SecretSanta.Web.Controllers
 
         public IActionResult Edit(int id)
         {
-            return View(Users[id]);
+            return View(MockData.Users[id]);
+        }
+
+        [HttpPost]
+        public IActionResult Edit(UserViewModel viewModel)
+        {
+            if (ModelState.IsValid)
+            {
+                MockData.Users[viewModel.Id] = viewModel;
+                return RedirectToAction(nameof(Index));
+            }
+            return View(viewModel);
         }
     }
 }

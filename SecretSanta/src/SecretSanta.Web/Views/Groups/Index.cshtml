@@ -5,7 +5,7 @@
 @foreach (GroupViewModel group in Model)
 {
     <section>
-        @group.Name
+        @group.Name <a asp-controller="Groups" asp-action="Edit" asp-route-id=@index>Edit</a>
         @{index++;}
     </section>
 }

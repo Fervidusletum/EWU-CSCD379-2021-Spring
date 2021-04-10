@@ -1,0 +1,10 @@
+﻿@model GroupViewModel
+
+<form asp-controller="Groups" asp-action="Edit" method="post">
+    <input type="hidden" asp-for="Id" />
+    <div>
+        <label asp-for="Name"></label>: <input type="text" asp-for="Name" />
+        <span asp-validation-for="Name"></span>
+    </div>
+    <button>Save</button>
+</form>

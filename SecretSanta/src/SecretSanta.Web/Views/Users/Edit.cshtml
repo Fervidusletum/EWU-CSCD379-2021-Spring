@@ -1,0 +1,14 @@
+﻿@model UserViewModel
+
+<form asp-controller="Users" asp-action="Edit" method="post">
+    <input type="hidden" asp-for="Id"/>
+    <div>
+        <label asp-for="FirstName"></label>: <input type="text" asp-for="FirstName"/>
+        <span asp-validation-for="FirstName"></span>
+    </div>
+    <div>
+    <label asp-for="LastName"></label>: <input type="text" asp-for="LastName" />
+    <span asp-validation-for="LastName"></span>
+</div>
+    <button>Save</button>
+</form>

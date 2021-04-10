@@ -1,0 +1,22 @@
+﻿@model GiftViewModel
+
+<form asp-controller="Gifts" asp-action="Edit" method="post">
+    <input type="hidden" asp-for="Id" />
+    <div>
+        <label asp-for="Title"></label>: <input type="text" asp-for="Title" />
+        <span asp-validation-for="Title"></span>
+    </div>
+    <div>
+        <label asp-for="Priority"></label>: <input type="text" asp-for="Priority" />
+        <span asp-validation-for="Priority"></span>
+    </div>
+    <div>
+        <label asp-for="Description"></label>: <input type="text" asp-for="Description" />
+        <span asp-validation-for="Description"></span>
+    </div>
+    <div>
+        <label asp-for="URL"></label>: <input type="text" asp-for="URL" />
+        <span asp-validation-for="URL"></span>
+    </div>
+    <button>Save</button>
+</form>

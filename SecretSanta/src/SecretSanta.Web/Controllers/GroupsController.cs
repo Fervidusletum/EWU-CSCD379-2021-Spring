@@ -4,20 +4,15 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SecretSanta.Web.ViewModels;
+using SecretSanta.Web.Data;
 
 namespace SecretSanta.Web.Controllers
 {
     public class GroupsController : Controller
     {
-        // move into dummy data folder later
-        public static List<GroupViewModel> Groups = new()
-        {
-            new GroupViewModel { Name="SMB" }
-        };
-
         public IActionResult Index()
         {
-            return View(Groups);
+            return View(MockData.Groups);
         }
 
         public IActionResult Create()
@@ -30,10 +25,26 @@ namespace SecretSanta.Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                Groups.Add(viewModel);
+                MockData.Groups.Add(viewModel);
                 return RedirectToAction(nameof(Index));
             }
 
+            return View(viewModel);
+        }
+
+        public IActionResult Edit(int id)
+        {
+            return View(MockData.Groups[id]);
+        }
+
+        [HttpPost]
+        public IActionResult Edit(GroupViewModel viewModel)
+        {
+            if (ModelState.IsValid)
+            {
+                MockData.Groups[viewModel.Id] = viewModel;
+                return RedirectToAction(nameof(Index));
+            }
             return View(viewModel);
         }
     }

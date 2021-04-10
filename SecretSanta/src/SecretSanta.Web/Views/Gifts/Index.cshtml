@@ -4,12 +4,22 @@
 
 @foreach (GiftViewModel gift in Model)
 {
-    <section>
-        @gift.Title - P:@gift.Priority
-        @gift.Description
-        @gift.URL
+    <section style="margin-bottom: 1em">
+        <div>
+            Title: @gift.Title - <a asp-controller="Gifts" asp-action="Edit" asp-route-id=@index>Edit</a>
+        </div>
+        <div>
+            &emsp; Priority: @gift.Priority
+        </div>
+        <div>
+            &emsp; Description: @gift.Description
+        </div>
+        <div>
+            &emsp; URL: @gift.URL
+        </div>
         @{index++;}
     </section>
+
 }
 <a asp-controller="Gifts" asp-action="Create">Create</a>
 <p>This is the gifts page.</p>
