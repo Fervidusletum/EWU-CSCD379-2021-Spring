@@ -6,6 +6,9 @@
 {
     <section>
         @group.Name <a asp-controller="Groups" asp-action="Edit" asp-route-id=@index>Edit</a>
+        <form asp-controller="Groups" asp-action="Delete" asp-route-id=@index method="post">
+            <button>X</button>
+        </form>
         @{index++;}
     </section>
 }

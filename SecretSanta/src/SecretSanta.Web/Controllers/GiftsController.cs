@@ -47,5 +47,12 @@ namespace SecretSanta.Web.Controllers
             }
             return View(viewModel);
         }
+
+        [HttpPost]
+        public IActionResult Delete(int id)
+        {
+            MockData.Gifts.RemoveAt(id);
+            return RedirectToAction(nameof(Index));
+        }
     }
 }

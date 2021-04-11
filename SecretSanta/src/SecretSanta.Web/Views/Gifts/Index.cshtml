@@ -17,9 +17,11 @@
         <div>
             &emsp; URL: @gift.URL
         </div>
+        <form asp-controller="Gifts" asp-action="Delete" asp-route-id=@index method="post">
+            <button>X</button>
+        </form>
         @{index++;}
     </section>
-
 }
 <a asp-controller="Gifts" asp-action="Create">Create</a>
 <p>This is the gifts page.</p>
