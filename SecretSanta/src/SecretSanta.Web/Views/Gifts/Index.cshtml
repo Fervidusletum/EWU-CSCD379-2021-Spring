@@ -1,15 +1,13 @@
 ﻿@model List<GiftViewModel>
 
-@{int index = 0;}
-
 @foreach (GiftViewModel gift in Model)
 {
     <section style="margin-bottom: 1em">
         <div>
-            Title: @gift.Title - <a asp-controller="Gifts" asp-action="Edit" asp-route-id=@index>Edit</a>
+            Recipient: @MockData.GetUser(gift.UserId).FullName - <a asp-controller="Gifts" asp-action="Edit" asp-route-id=@gift.Id>Edit</a>
         </div>
         <div>
-            &emsp; Priority: @gift.Priority
+            &emsp; Title: @gift.Title - Priority: @gift.Priority
         </div>
         <div>
             &emsp; Description: @gift.Description
@@ -17,10 +15,9 @@
         <div>
             &emsp; URL: @gift.URL
         </div>
-        <form asp-controller="Gifts" asp-action="Delete" asp-route-id=@index method="post">
+        <form asp-controller="Gifts" asp-action="Delete" asp-route-id=@gift.Id method="post">
             <button>X</button>
         </form>
-        @{index++;}
     </section>
 }
 <a asp-controller="Gifts" asp-action="Create">Create</a>

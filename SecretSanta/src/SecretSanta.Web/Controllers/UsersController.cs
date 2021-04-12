@@ -10,39 +10,30 @@ namespace SecretSanta.Web.Controllers
 {
     public class UsersController : Controller
     {
-        public IActionResult Index()
-        {
-            return View(MockData.Users);
-        }
+        public IActionResult Index() => View(MockData.Users);
 
-        public IActionResult Create()
-        {
-            return View();
-        }
+        public IActionResult Create() => View(); 
 
         [HttpPost]
         public IActionResult Create(UserViewModel viewModel)
         {
             if (ModelState.IsValid)
             {
-                MockData.Users.Add(viewModel);
+                MockData.AddUser(viewModel);
                 return RedirectToAction(nameof(Index));
             }
 
             return View(viewModel);
         }
 
-        public IActionResult Edit(int id)
-        {
-            return View(MockData.Users[id]);
-        }
+        public IActionResult Edit(int id) => View(MockData.GetUser(id));
 
         [HttpPost]
         public IActionResult Edit(UserViewModel viewModel)
         {
             if (ModelState.IsValid)
             {
-                MockData.Users[viewModel.Id] = viewModel;
+                MockData.UpdateUser(viewModel);
                 return RedirectToAction(nameof(Index));
             }
             return View(viewModel);
@@ -51,7 +42,7 @@ namespace SecretSanta.Web.Controllers
         [HttpPost]
         public IActionResult Delete(int id)
         {
-            MockData.Users.RemoveAt(id);
+            MockData.DeleteUser(id);
             return RedirectToAction(nameof(Index));
         }
     }

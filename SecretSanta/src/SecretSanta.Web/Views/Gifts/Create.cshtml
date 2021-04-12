@@ -1,20 +1,6 @@
 ﻿@model GiftViewModel
 
 <form asp-controller="Gifts" asp-action="Create" method="post">
-    <div>
-        <label asp-for="Title"></label> <input type="text" asp-for="Title" />
-        <span asp-validation-for="Title"></span>
-    </div>
-    <div>
-        <label asp-for="Priority"></label> <input type="text" asp-for="Priority" value="0" />
-        <span asp-validation-for="Priority"></span>
-    </div>
-    <div>
-        <label asp-for="Description"></label> <input type="text" asp-for="Description" />
-    </div>
-    <div>
-        <label asp-for="URL"></label> <input type="text" asp-for="URL" />
-        <span asp-validation-for="URL"></span>
-    </div>
+    @await Html.PartialAsync("_CreateOrEdit")
     <button>Create</button>
 </form>

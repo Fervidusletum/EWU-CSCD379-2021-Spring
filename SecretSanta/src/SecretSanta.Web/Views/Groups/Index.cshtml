@@ -1,15 +1,12 @@
 ﻿@model List<GroupViewModel>
 
-@{int index = 0;}
-
 @foreach (GroupViewModel group in Model)
 {
     <section>
-        @group.Name <a asp-controller="Groups" asp-action="Edit" asp-route-id=@index>Edit</a>
-        <form asp-controller="Groups" asp-action="Delete" asp-route-id=@index method="post">
+        @group.Name <a asp-controller="Groups" asp-action="Edit" asp-route-id=@group.Id>Edit</a>
+        <form asp-controller="Groups" asp-action="Delete" asp-route-id=@group.Id method="post">
             <button>X</button>
         </form>
-        @{index++;}
     </section>
 }
 <a asp-controller="Groups" asp-action="Create">Create</a>

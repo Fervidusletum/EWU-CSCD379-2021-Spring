@@ -11,6 +11,10 @@ namespace SecretSanta.Web.ViewModels
         public int Id { get; set; } = 0;
 
         [Required]
+        [Display(Name = "Recipient")]
+        public int UserId { get; set; } = 0;
+
+        [Required]
         [Display(Name="Title")]
         public string Title { get; set; } = "";
 

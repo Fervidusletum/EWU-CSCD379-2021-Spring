@@ -25,24 +25,21 @@ namespace SecretSanta.Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                MockData.Groups.Add(viewModel);
+                MockData.AddGroup(viewModel);
                 return RedirectToAction(nameof(Index));
             }
 
             return View(viewModel);
         }
 
-        public IActionResult Edit(int id)
-        {
-            return View(MockData.Groups[id]);
-        }
+        public IActionResult Edit(int id) => View(MockData.GetGroup(id)); 
 
         [HttpPost]
         public IActionResult Edit(GroupViewModel viewModel)
         {
             if (ModelState.IsValid)
             {
-                MockData.Groups[viewModel.Id] = viewModel;
+                MockData.UpdateGroup(viewModel);
                 return RedirectToAction(nameof(Index));
             }
             return View(viewModel);
@@ -51,7 +48,7 @@ namespace SecretSanta.Web.Controllers
         [HttpPost]
         public IActionResult Delete(int id)
         {
-            MockData.Groups.RemoveAt(id);
+            MockData.DeleteGroup(id);
             return RedirectToAction(nameof(Index));
         }
     }
