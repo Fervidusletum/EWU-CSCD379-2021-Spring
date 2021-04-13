@@ -41,7 +41,6 @@ namespace SecretSanta.Web.Controllers
         [HttpPost]
         public IActionResult Delete(int id)
         {
-            MockData.Gifts.RemoveAt(id);
             MockData.DeleteGift(id);
             return RedirectToAction(nameof(Index));
         }
