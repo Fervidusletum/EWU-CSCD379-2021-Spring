@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width" />
-    <title>UserGroup - @ViewBag.Title</title>
+    <title>Secret Santa - @ViewBag.Title</title>
     <!-- Stylesheets -->
     <% for (var filename in htmlWebpackPlugin.files.css) { %>
     <link href="~<%= htmlWebpackPlugin.files.css[filename] %>" rel="stylesheet" />
@@ -25,7 +25,7 @@
         <button class="sm:hidden pr-3"><i class="fas fa-bars text-2xl align-middle h-full"></i></button>
     </header>
 
-    <div class="m-4">
+    <div class="text-gray-800 m-4">
         @RenderBody()
     </div>
 
