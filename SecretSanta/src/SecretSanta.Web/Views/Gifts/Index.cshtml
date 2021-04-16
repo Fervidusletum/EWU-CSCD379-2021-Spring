@@ -1,11 +1,22 @@
 @model List<GiftViewModel>
 
-@{int counter = 0;}
+@{ViewBag.Title = "Gifts";}
+@{int index = 0;}
 
-@foreach(var groupViewModel in Model) {
-    <section>
-        @groupViewModel.Title <a asp-action="Edit" asp-route-id=@counter>Edit</a><form asp-action="Delete" asp-route-id=@counter method="post"><button>X</button></form>
-        @{counter++;}
+<section class="itemlayout">
+    @foreach (var giftViewModel in Model.OrderBy(gift => gift.Priority))
+    {
+        index = MockData.Gifts.FindIndex(gift => gift.Id == giftViewModel.Id);
+    <section class="itembox flex flex-col pl-3">
+        <div class="flex flex-row justify-between py-1">
+            <a class="flex flex-col" asp-action="Edit" asp-route-id=@index>
+                <div class="py-1">@giftViewModel.Title </div>
+                <div class="py-1">@giftViewModel.Description</div>
+            </a>
+            <form asp-action="Delete" asp-route-id=@index method="post"><button><i class="iconremove fas fa-times"></i></button></form>
+        </div>
+        <a class="hover:border-indigo-500 border-b-2 border-white py-1" href="@giftViewModel.Url" target="_blank" rel="noopener noreferrer">@giftViewModel.Url</a>
     </section>
-}
-<a asp-action="Create">Create</a>
+    }
+</section>
+<a class="m-2" asp-action="Create"><i class="iconadd far fa-plus-square"></i></a>

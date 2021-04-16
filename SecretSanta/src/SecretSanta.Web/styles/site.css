@@ -1,3 +1,21 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer components {
+    .itembox {
+        @apply border-indigo-400 border-2 rounded-xl p-2 mr-2 mb-2 flex flex-row justify-between;
+    }
+
+    .itemlayout {
+        @apply grid grid-cols-1 sm:grid-cols-3;
+    }
+
+    .iconadd {
+        @apply text-2xl text-indigo-400;
+    }
+
+    .iconremove {
+        @apply text-xl align-text-top text-indigo-400;
+    }
+}

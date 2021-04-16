@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SecretSanta.Web.Data;
 using SecretSanta.Web.ViewModels;
+using System.Linq;
 
 namespace SecretSanta.Web.Controllers
 {
@@ -21,6 +22,7 @@ namespace SecretSanta.Web.Controllers
         {
             if (ModelState.IsValid)
             {
+                viewModel.Id = MockData.Gifts.Max(gift => gift.Id) + 1;
                 MockData.Gifts.Add(viewModel);
                 return RedirectToAction(nameof(Index));
             }

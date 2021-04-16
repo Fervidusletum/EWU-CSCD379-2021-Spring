@@ -4,14 +4,14 @@
 @{int counter = 0;}
 
 
-<section class="grid grid-cols-1 sm:grid-cols-3">
+<section class="itemlayout">
     @foreach (var userViewModel in Model)
     {
-    <section class="border-indigo-400 border-2 rounded-xl p-2 mr-2 mb-2 flex flex-row justify-between">
+    <section class="itembox">
         <a class="ml-2" asp-action="Edit" asp-route-id=@counter>@userViewModel.FirstName @userViewModel.LastName</a>
-        <form asp-action="Delete" asp-route-id=@counter method="post"><button><i class="fas fa-times text-xl align-text-top text-indigo-400"></i></button></form>
+        <form asp-action="Delete" asp-route-id=@counter method="post"><button><i class="iconremove fas fa-times"></i></button></form>
         @{counter++;}
     </section>
     }
 </section>
-<a class="m-2" asp-action="Create"><i class="fas fa-user-plus text-2xl text-indigo-400"></i></a>
+<a class="m-2" asp-action="Create"><i class="iconadd fas fa-user-plus"></i></a>

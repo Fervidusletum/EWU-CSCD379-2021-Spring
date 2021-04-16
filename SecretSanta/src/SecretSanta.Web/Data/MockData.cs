@@ -24,8 +24,8 @@ namespace SecretSanta.Web.Data
         {
             new GiftViewModel { Id = 1, Title = "Drone", Description = "A fun little way to get a birds eye view", Url="https://www.google.com", Priority = 2, UserId = 1 },
             new GiftViewModel { Id = 2, Title = "Rat Poison", Description = "Hopefully a way to get rid of those unusual size rodents", Url="https://www.google.com", Priority = 1, UserId = 1 },
-            new GiftViewModel { Id = 1, Title = "Drone", Description = "A fun little way to get a birds eye view", Url="https://www.google.com", Priority = 2, UserId = 2 },
-            new GiftViewModel { Id = 2, Title = "Rat Poison", Description = "Hopefully a way to get rid of those unusual size rodents", Url="https://www.google.com", Priority = 1, UserId = 2 },
+            new GiftViewModel { Id = 3, Title = "Drone", Description = "A fun little way to get a birds eye view", Url="https://www.google.com", Priority = 2, UserId = 2 },
+            new GiftViewModel { Id = 4, Title = "Rat Poison", Description = "Hopefully a way to get rid of those unusual size rodents", Url="https://www.google.com", Priority = 1, UserId = 2 },
         };
     }
 }
