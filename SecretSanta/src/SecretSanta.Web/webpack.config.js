@@ -26,7 +26,9 @@ module.exports = (env, argv) => {
         output: {
             filename: 'js/[name].[hash].js',
             path: distPath,
-            publicPath: '/'
+            publicPath: '/',
+            libraryTarget: 'var',
+            library: 'SecretSanta'
         },
 
         module: {

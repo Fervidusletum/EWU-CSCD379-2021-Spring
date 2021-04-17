@@ -11,18 +11,18 @@
 </head>
 
 <body>
-    <header class="bg-indigo-50 flex flex-row justify-between p-3 items-center font-semibold text-gray-700">
+    <header class="bg-indigo-50 flex flex-col sm:flex-row justify-between p-3 font-semibold text-gray-700">
         <div class="flex flex-row justify-between">
             <a class="mb-1 mr-4 border-b-2 border-gray-300 text-2xl text-gray-800" asp-controller="Home" asp-action="Index">Secret Santa</a>
+            <button class="sm:hidden pr-3" onclick="SecretSanta.toggleMenu()"><i class="fas fa-bars text-2xl align-middle h-full"></i></button>
         </div>
-        <nav class="hidden sm:inline-block">
+        <nav id="headerNav" class="hidden sm:inline-block">
             <ul class="flex flex-col sm:flex-row pb-1">
                 <li class="px-4"><a class="mb-1 border-b-2 border-gray-300 text-lg" asp-controller="Users" asp-action="Index">Users</a></li>
                 <li class="px-4"><a class="mb-1 border-b-2 border-gray-300 text-lg" asp-controller="Groups" asp-action="Index">Groups</a></li>
                 <li class="px-4"><a class="mb-1 border-b-2 border-gray-300 text-lg" asp-controller="Gifts" asp-action="Index">Gifts</a></li>
             </ul>
         </nav>
-        <button class="sm:hidden pr-3"><i class="fas fa-bars text-2xl align-middle h-full"></i></button>
     </header>
 
     <div class="text-gray-800 m-4">
