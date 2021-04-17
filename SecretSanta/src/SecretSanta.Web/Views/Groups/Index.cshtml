@@ -1,11 +1,18 @@
 @model List<GroupViewModel>
 
+@{ViewBag.Title = "Groups";}
 @{int counter = 0;}
 
-@foreach(var groupViewModel in Model) {
-    <section>
-        @groupViewModel.Name <a asp-action="Edit" asp-route-id=@counter>Edit</a><form asp-action="Delete" asp-route-id=@counter method="post"><button>X</button></form>
+<section class="itemlayout">
+    @foreach (var groupViewModel in Model)
+    {
+    <section class="itembox">
+        <a class="ml-2" asp-action="Edit" asp-route-id=@counter>@groupViewModel.Name</a>
+        <form asp-action="Delete" asp-route-id=@counter method="post">
+            <button onclick="return confirm('Do you want to remove @groupViewModel.Name?');"><i class="iconremove fas fa-times"></i></button>
+        </form>
         @{counter++;}
     </section>
-}
-<a asp-action="Create">Create</a>
+    }
+</section>
+<a class="m-2" asp-action="Create"><i class="iconadd far fa-plus-square"></i></a>

@@ -12,7 +12,7 @@
     }
 
     .iconadd {
-        @apply text-2xl text-indigo-400;
+        @apply text-3xl text-indigo-400;
     }
 
     .iconremove {

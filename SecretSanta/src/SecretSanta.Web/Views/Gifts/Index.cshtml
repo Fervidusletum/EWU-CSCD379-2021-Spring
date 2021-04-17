@@ -13,10 +13,12 @@
                 <div class="py-1">@giftViewModel.Title </div>
                 <div class="py-1">@giftViewModel.Description</div>
             </a>
-            <form asp-action="Delete" asp-route-id=@index method="post"><button><i class="iconremove fas fa-times"></i></button></form>
+            <form asp-action="Delete" asp-route-id=@index method="post">
+                <button onclick="return confirm('Do you want to remove @giftViewModel.Title?');"><i class="iconremove fas fa-times"></i></button>
+            </form>
         </div>
-        <a class="hover:border-indigo-500 border-b-2 border-white py-1" href="@giftViewModel.Url" target="_blank" rel="noopener noreferrer">@giftViewModel.Url</a>
+        <a class="no-underline hover:underline" href="@giftViewModel.Url" target="_blank" rel="noopener noreferrer">@giftViewModel.Url</a>
     </section>
     }
 </section>
-<a class="m-2" asp-action="Create"><i class="iconadd far fa-plus-square"></i></a>
+<a class="m-2" asp-action="Create"><i class="iconadd text-3xl far fa-plus-square"></i></a>
