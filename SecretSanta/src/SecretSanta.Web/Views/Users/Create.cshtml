@@ -2,6 +2,10 @@
 
 <form asp-controller="Users" asp-action="Create" method="post">
     @await Html.PartialAsync("_CreateOrEdit")
-    <button>Create</button>
-    <a asp-controller="Users" asp-action="Index">Cancel</a>
+
+    <div class="font-semibold" asp-validation-summary='All'></div>
+    <div class="flex flex-row space-x-4 pt-2">
+        <button class="btn">Create</button>
+        <a class="btn" asp-controller="Users" asp-action="Index">Cancel</a>
+    </div>
 </form>

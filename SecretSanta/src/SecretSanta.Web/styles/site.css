@@ -12,10 +12,32 @@
     }
 
     .iconadd {
-        @apply text-3xl text-indigo-400;
+        @apply text-3xl text-indigo-400 active:text-indigo-600;
     }
 
     .iconremove {
-        @apply text-xl align-text-top text-indigo-400;
+        @apply text-xl align-text-top text-indigo-400 active:text-indigo-600;
+    }
+
+    .inputfield_container {
+        @apply flex flex-col w-52 pb-2;
+    }
+
+    .inputfield {
+        @apply border-2 border-indigo-400 rounded-lg p-1 pl-2 focus:outline-none focus:ring-transparent focus:border-blue-800;
+    }
+
+    .inputfield_title {
+        @apply font-thin text-lg pl-1;
+    }
+
+    .btn {
+        @apply text-center w-24 border-2 border-gray-400 rounded-lg p-1 bg-gray-100 hover:bg-white active:bg-gray-200;
+    }
+}
+
+@layer utilities {
+    .input-validation-error {
+        @apply border-red-400 focus:border-red-800;
     }
 }

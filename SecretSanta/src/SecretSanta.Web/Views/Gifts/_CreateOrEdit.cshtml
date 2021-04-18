@@ -1,28 +1,29 @@
 @model GiftViewModel
 
-<div>
-    <label asp-for="Title"></label>
-    <input type="text" asp-for="Title" />
-    <span asp-validation-for="Title"></span>
-</div>
-<div>
-    <label asp-for="Description"></label>
-    <input type="text" asp-for="Description" />
-    <span asp-validation-for="Description"></span>
-</div>
-<div>
-    <label asp-for="Url"></label>
-    <input type="text" asp-for="Url" />
-    <span asp-validation-for="Url"></span>
-</div>
-<div>
-    <label asp-for="Priority"></label>
-    <input type="text" asp-for="Priority" />
-    <span asp-validation-for="Priority"></span>
-</div>
-<div>
-    <label asp-for="UserId"></label>
-        <select asp-for="UserId" asp-items="@(new SelectList(MockData.Users, "Id", "FullName"))">
+<div class="flex flex-col">
+    <div class="inputfield_container">
+        <label class="inputfield_title" asp-for="Title"></label>
+        <input class="inputfield" type="text" asp-for="Title" />
+    </div>
+    <div class="inputfield_container w-72 sm:w-96">
+        <label class="inputfield_title" asp-for="Description"></label>
+        <textarea class="inputfield h-48 sm:h-24" asp-for="Description"></textarea>
+    </div>
+    <div class="flex flex-col sm:flex-row">
+        <div class="inputfield_container w-20">
+            <label class="inputfield_title" asp-for="Priority"></label>
+            <input class="inputfield" type="text" asp-for="Priority" />
+        </div>
+        <span class="w-4"></span>
+        <div class="inputfield_container w-72">
+            <label class="inputfield_title" asp-for="Url"></label>
+            <input class="inputfield" type="text" asp-for="Url" />
+        </div>
+    </div>
+    <div class="inputfield_container">
+        <label class="inputfield_title" asp-for="UserId"></label>
+        <select class="inputfield" asp-for="UserId" asp-items="@(new SelectList(MockData.Users, "Id", "FullName"))">
             <option>Please select one</option>
         </select>
+    </div>
 </div>

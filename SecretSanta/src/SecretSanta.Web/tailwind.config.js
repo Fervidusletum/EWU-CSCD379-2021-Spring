@@ -4,6 +4,10 @@
         extend: {}
     },
     variants: {
+        extend: {
+            backgroundColor: ['active'],
+            textColor: ['active'],
+        }
     },
     plugins: []
 }

@@ -3,6 +3,10 @@
 <form asp-controller="Gifts" asp-action="Edit" method="post">
     <input type="hidden" asp-for="Id" />
     @await Html.PartialAsync("_CreateOrEdit")
-    <button>Update</button>
-    <a asp-controller="Gifts" asp-action="Index">Cancel</a>
+
+    <div class="font-semibold" asp-validation-summary='All'></div>
+    <div class="flex flex-row space-x-4 pt-2">
+        <button class="btn">Update</button>
+        <a class="btn" asp-controller="Gifts" asp-action="Index">Cancel</a>
+    </div>
 </form>
