@@ -1,5 +1,7 @@
 @model GiftViewModel
 
+@{ViewBag.Title = "Create Gift";}
+
 <form asp-controller="Gifts" asp-action="Create" method="post">
     @await Html.PartialAsync("_CreateOrEdit")
 

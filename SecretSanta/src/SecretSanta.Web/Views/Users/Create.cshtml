@@ -1,5 +1,7 @@
 @model UserViewModel
 
+@{ViewBag.Title = "Create User";}
+
 <form asp-controller="Users" asp-action="Create" method="post">
     @await Html.PartialAsync("_CreateOrEdit")
 
