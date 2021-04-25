@@ -7,13 +7,19 @@ namespace SecretSanta.Business
 {
     public class UserRepository : IUserRepository
     {
-        public ICollection<User> List() => MockData.Users;
+        private ICollection<User> Users { get; }
+        public UserRepository(ICollection<User> userCollection)
+            => Users = userCollection ?? throw new ArgumentNullException(nameof(userCollection));
 
-        public User? GetItem(int id) => MockData.Users.FirstOrDefault(user => user.Id == id);
+        public ICollection<User> List() => Users;
+
+        public User? GetItem(int id) => Users.FirstOrDefault(user => user.Id == id);
 
         public User Create(User newUser)
         {
-            MockData.Users.Add(newUser);
+            if (newUser is null) throw new ArgumentNullException(nameof(newUser));
+
+            Users.Add(newUser);
             return newUser;
         }
 
@@ -22,12 +28,14 @@ namespace SecretSanta.Business
             User? foundUser = GetItem(id);
             if (foundUser is null) return false;
 
-            MockData.Users.Remove(foundUser);
+            Users.Remove(foundUser);
             return true;
         }
 
         public void Save(User user)
         {
+            if (user is null) throw new ArgumentNullException(nameof(user));
+
             Remove(user.Id);
             Create(user);
         }

@@ -10,15 +10,15 @@ using SecretSanta.Data;
 
 namespace SecretSanta.Api.Controllers
 {
-    public class UserController : Controller
+    public class UsersController : Controller
     {
         private IUserRepository UserRepository { get; }
-        public UserController(IUserRepository userRepo)
+        public UsersController(IUserRepository userRepo)
             => UserRepository = userRepo ?? throw new ArgumentNullException(nameof(userRepo));
 
         // /api/users
         [HttpGet]
-        public IEnumerable<User> Get() => UserRepository.List();
+        public ICollection<User> Get() => UserRepository.List();
 
         // /api/users/<index>
         [HttpGet("{id}")]
