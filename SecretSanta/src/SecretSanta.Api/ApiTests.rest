@@ -10,16 +10,13 @@ GET {{host}}/api/users
 GET {{host}}/api/users/0
 
 ###
-DELETE {{host}}/api/users/0
-
-###
 POST {{host}}/api/users
 Content-Type: {{contentType}}
 
 {
     "firstname": "Shy",
     "lastname": "Guy",
-    "id" : 3,
+    "id" : 3
 }
 
 ###
@@ -29,5 +26,8 @@ Content-Type: {{contentType}}
 {
     "firstname": "Wario",
     "lastname": "Wario",
-    "id" : 0,
+    "id" : 0
 }
+
+###
+DELETE {{host}}/api/users/0
