@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Microsoft.AspNetCore.Mvc;
-using SecretSanta.Business;
 using SecretSanta.Data;
 
 namespace SecretSanta.Business.Tests
@@ -22,7 +20,7 @@ namespace SecretSanta.Business.Tests
         [TestMethod]
         public void List_Request_ReturnsUsers()
         {
-            IUserRepository sut = new UserRepository(new MockCollection());
+            IUserRepository sut = new UserRepository(new FakeCollection());
 
             ICollection<User> users = sut.List();
 
@@ -35,20 +33,20 @@ namespace SecretSanta.Business.Tests
         [DataRow(2)]
         public void GetItem_GivenValidId_ReturnsCorrectUser(int id)
         {
-            MockCollection mockdata = new MockCollection();
-            IUserRepository sut = new UserRepository(mockdata);
+            FakeCollection fakedata = new FakeCollection();
+            IUserRepository sut = new UserRepository(fakedata);
 
             User user = sut.GetItem(id) ?? throw new IndexOutOfRangeException(nameof(id));
 
-            Assert.AreEqual(mockdata[id].Id, user.Id);
+            Assert.AreEqual(fakedata[id].Id, user.Id);
         }
 
         [TestMethod]
         [DataRow(-1)]
         [DataRow(4)]
-        public void GetItem_GivenBadId_ReturnsNull(int id)
+        public void GetItem_GivenInvalidId_ReturnsNull(int id)
         {
-            IUserRepository sut = new UserRepository(new MockCollection());
+            IUserRepository sut = new UserRepository(new FakeCollection());
 
             User? user = sut.GetItem(id);
 
@@ -58,21 +56,21 @@ namespace SecretSanta.Business.Tests
         [TestMethod]
         public void Create_GivenValidUser_AddsToList()
         {
-            MockCollection mockdata = new MockCollection();
-            IUserRepository sut = new UserRepository(mockdata);
+            FakeCollection fakedata = new FakeCollection();
+            IUserRepository sut = new UserRepository(fakedata);
             User fakeUser = new User() { Id = 3, FirstName = "test", LastName = "ing" };
 
             sut.Create(fakeUser);
 
-            Assert.AreEqual(fakeUser.Id, mockdata[3].Id);
-            Assert.AreEqual(fakeUser.FirstName, mockdata[3].FirstName);
-            Assert.AreEqual(fakeUser.LastName, mockdata[3].LastName);
+            Assert.AreEqual(fakeUser.Id, fakedata[3].Id);
+            Assert.AreEqual(fakeUser.FirstName, fakedata[3].FirstName);
+            Assert.AreEqual(fakeUser.LastName, fakedata[3].LastName);
         }
 
         [TestMethod]
         public void Create_GivenNullUser_ThrowsArgNullException()
         {
-            IUserRepository sut = new UserRepository(new MockCollection());
+            IUserRepository sut = new UserRepository(new FakeCollection());
 
             ArgumentNullException ex = Assert.ThrowsException<ArgumentNullException>(
                 () => sut.Create(null!));
@@ -85,16 +83,16 @@ namespace SecretSanta.Business.Tests
         [DataRow(0)]
         public void Remove_GivenValidId_RemovesUser(int id)
         {
-            MockCollection mockdata = new MockCollection();
-            IUserRepository sut = new UserRepository(mockdata);
-            int count = mockdata.Count;
-            User removed = mockdata[id];
+            FakeCollection fakedata = new FakeCollection();
+            IUserRepository sut = new UserRepository(fakedata);
+            int count = fakedata.Count;
+            User removed = fakedata[id];
 
             bool status = sut.Remove(id);
 
             Assert.IsTrue(status);
-            Assert.AreEqual(count - 1, mockdata.Count);
-            Assert.IsNull(mockdata.FirstOrDefault(user => user.Id == removed.Id));
+            Assert.AreEqual(count - 1, fakedata.Count);
+            Assert.IsNull(fakedata.FirstOrDefault(user => user.Id == removed.Id));
         }
 
         [TestMethod]
@@ -102,26 +100,26 @@ namespace SecretSanta.Business.Tests
         [DataRow(3)]
         public void Remove_GivenInvalidId_ReturnsFalse(int id)
         {
-            MockCollection mockdata = new MockCollection();
-            IUserRepository sut = new UserRepository(mockdata);
-            int count = mockdata.Count;
+            FakeCollection fakedata = new FakeCollection();
+            IUserRepository sut = new UserRepository(fakedata);
+            int count = fakedata.Count;
 
             bool status = sut.Remove(id);
 
             Assert.IsFalse(status);
-            Assert.AreEqual(count, mockdata.Count);
+            Assert.AreEqual(count, fakedata.Count);
         }
 
         [TestMethod]
         public void Save_GivenValidChangedUser_UpdatesUser()
         {
-            MockCollection mockdata = new MockCollection();
-            IUserRepository sut = new UserRepository(mockdata);
+            FakeCollection fakedata = new FakeCollection();
+            IUserRepository sut = new UserRepository(fakedata);
             User fakeUser = new User() { Id = 0, FirstName = "test", LastName = "ing" };
 
             sut.Save(fakeUser);
 
-            User updatedUser = mockdata.Find(user => user.Id == fakeUser.Id)!;
+            User updatedUser = fakedata.Find(user => user.Id == fakeUser.Id)!;
             Assert.AreEqual(fakeUser.Id, updatedUser.Id);
             Assert.AreEqual(fakeUser.FirstName, updatedUser.FirstName);
             Assert.AreEqual(fakeUser.LastName, updatedUser.LastName);
@@ -130,7 +128,7 @@ namespace SecretSanta.Business.Tests
         [TestMethod]
         public void Save_GivenNullUser_ThrowsArgNullException()
         {
-            IUserRepository sut = new UserRepository(new MockCollection());
+            IUserRepository sut = new UserRepository(new FakeCollection());
 
             ArgumentNullException ex = Assert.ThrowsException<ArgumentNullException>(
                 () => sut.Save(null!));
@@ -139,9 +137,9 @@ namespace SecretSanta.Business.Tests
         }
 
 
-        private class MockCollection : List<User>
+        private class FakeCollection : List<User>
         {
-            public MockCollection()
+            public FakeCollection()
             {
                 Add(new User() { Id = 0, FirstName = "te", LastName = "st" });
                 Add(new User() { Id = 1, FirstName = "fn", LastName = "ln" });

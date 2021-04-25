@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SecretSanta.Api.Dto;
 using SecretSanta.Business;
@@ -32,7 +30,6 @@ namespace SecretSanta.Api.Controllers
 
             return user;
         }
-
 
         // /api/users/<index>
         [HttpDelete("{id}")]
