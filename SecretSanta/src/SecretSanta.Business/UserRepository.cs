@@ -5,31 +5,31 @@ using SecretSanta.Data;
 
 namespace SecretSanta.Business
 {
-    class UserRepository : IUserRepository
+    public class UserRepository : IUserRepository
     {
-        public User Create(User item)
-        {
-            throw new NotImplementedException();
-        }
+        public ICollection<User> List() => MockData.Users;
 
-        public User? GetItem(int id)
-        {
-            throw new NotImplementedException();
-        }
+        public User? GetItem(int id) => MockData.Users.FirstOrDefault(user => user.Id == id);
 
-        public ICollection<User> List()
+        public User Create(User newUser)
         {
-            throw new NotImplementedException();
+            MockData.Users.Add(newUser);
+            return newUser;
         }
 
         public bool Remove(int id)
         {
-            throw new NotImplementedException();
+            User? foundUser = GetItem(id);
+            if (foundUser is null) return false;
+
+            MockData.Users.Remove(foundUser);
+            return true;
         }
 
-        public void Save(User item)
+        public void Save(User user)
         {
-            throw new NotImplementedException();
+            Remove(user.Id);
+            Create(user);
         }
     }
 }
