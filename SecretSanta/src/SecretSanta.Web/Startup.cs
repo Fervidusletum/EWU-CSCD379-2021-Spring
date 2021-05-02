@@ -15,7 +15,7 @@ namespace SecretSanta.Web
     {
         public static System.Net.Http.HttpClient ApiClient = new()
         {
-            BaseAddress = new Uri("https://localhost:5100") // may need to set to 5101
+            BaseAddress = new Uri("https://localhost:5101")
         };
 
         // This method gets called by the runtime. Use this method to add services to the container.

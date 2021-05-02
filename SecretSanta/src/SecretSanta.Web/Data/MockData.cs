@@ -5,16 +5,11 @@ namespace SecretSanta.Web.Data
 {
     public static class MockData
     {
-        /*
+        // leaving this in so that gifts view doesn't error on compile
         public static List<UserViewModel> Users = new List<UserViewModel>
         {
-            new UserViewModel { Id = 1, FirstName = "Inigo", LastName = "Montoya" },
-            new UserViewModel { Id = 2, FirstName = "Princess", LastName = "Buttercup" },
-            new UserViewModel { Id = 3, FirstName = "Prince", LastName = "Humperdink" },
-            new UserViewModel { Id = 4, FirstName = "Count", LastName = "Rugen" },
-            new UserViewModel { Id = 5, FirstName = "Miracle", LastName = "Max" },
+            new UserViewModel { Id = 1, FirstName = "fake", LastName = "user" }
         };
-        */
 
         public static List<GroupViewModel> Groups = new List<GroupViewModel>
         {
