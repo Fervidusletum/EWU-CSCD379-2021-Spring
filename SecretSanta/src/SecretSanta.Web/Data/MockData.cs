@@ -5,7 +5,7 @@ namespace SecretSanta.Web.Data
 {
     public static class MockData
     {
-        
+        /*
         public static List<UserViewModel> Users = new List<UserViewModel>
         {
             new UserViewModel { Id = 1, FirstName = "Inigo", LastName = "Montoya" },
@@ -14,7 +14,7 @@ namespace SecretSanta.Web.Data
             new UserViewModel { Id = 4, FirstName = "Count", LastName = "Rugen" },
             new UserViewModel { Id = 5, FirstName = "Miracle", LastName = "Max" },
         };
-        
+        */
 
         public static List<GroupViewModel> Groups = new List<GroupViewModel>
         {
