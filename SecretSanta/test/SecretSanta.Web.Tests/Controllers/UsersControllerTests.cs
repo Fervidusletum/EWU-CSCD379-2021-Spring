@@ -10,11 +10,11 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace SecretSanta.Api.Tests.Controllers
+namespace SecretSanta.Web.Tests
 {
     [TestClass]
-    public class UserControllerTests
+    public class UsersControllerTests
     {
-        
+
     }
 }
