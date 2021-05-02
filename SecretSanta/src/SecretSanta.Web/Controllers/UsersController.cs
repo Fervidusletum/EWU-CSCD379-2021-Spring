@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using System.Threading.Tasks;
-using SecretSanta.Web.Data;
 using SecretSanta.Web.ViewModels;
 using SecretSanta.Web.Api;
 
@@ -18,13 +17,15 @@ namespace SecretSanta.Web.Controllers
 
         public async Task<IActionResult> Index()
         {
-            ICollection<User> users = await Client.GetAllAsync();
+            ICollection<UserDtoFull> users = await Client.GetAllAsync();
             List<UserViewModel> viewModelUsers = new();
-            foreach(User u in users)
+            foreach(UserDtoFull u in users)
             {
+                if (u.Id is null) continue;
+
                 viewModelUsers.Add(new UserViewModel
                 {
-                    Id = u.Id,
+                    Id = (int)u.Id, // casting from nullable int, this entry is skipped if null
                     FirstName = u.FirstName,
                     LastName = u.LastName
                 });
@@ -40,7 +41,7 @@ namespace SecretSanta.Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                await Client.PostAsync(new User
+                await Client.PostAsync(new UserDtoFull
                 {
                     Id = viewModel.Id,
                     FirstName = viewModel.FirstName,
@@ -55,14 +56,13 @@ namespace SecretSanta.Web.Controllers
 
         public async Task<IActionResult> Edit(int id)
         {
-            User usr = await Client.GetAsync(id);
+            UserDtoFnLn usr = await Client.GetAsync(id);
 
             return View(new UserViewModel
             {
-                Id = usr.Id,
+                Id = id,
                 FirstName = usr.FirstName,
                 LastName = usr.LastName
-
             });
         }
 
@@ -71,9 +71,8 @@ namespace SecretSanta.Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                await Client.PutAsync(viewModel.Id, new User
+                await Client.PutAsync(viewModel.Id, new UserDtoFnLn
                 {
-                    Id = viewModel.Id,
                     FirstName = viewModel.FirstName,
                     LastName = viewModel.LastName
                 });

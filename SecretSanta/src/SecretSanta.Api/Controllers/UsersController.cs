@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SecretSanta.Business;
 using SecretSanta.Data;
+using SecretSanta.Api.Dto;
 
 namespace SecretSanta.Api.Controllers
 {
@@ -17,18 +18,77 @@ namespace SecretSanta.Api.Controllers
             => Repository = repository ?? throw new System.ArgumentNullException(nameof(repository));
 
         [HttpGet]
-        [ProducesResponseType(typeof(IEnumerable<User>),StatusCodes.Status200OK)]
-        public IEnumerable<User> Get()
-            => Repository.List();
+        [ProducesResponseType(typeof(IEnumerable<UserDtoFull>),StatusCodes.Status200OK)]
+        public ActionResult<IEnumerable<UserDtoFull?>> Get()
+        {
+            List<UserDtoFull?> dtos = new();
+            foreach (User u in Repository.List())
+            {
+                dtos.Add(new UserDtoFull
+                {
+                    Id = u.Id,
+                    FirstName = u.FirstName,
+                    LastName = u.LastName
+                });
+            }
+
+            return dtos;
+        }
 
         [HttpGet("{id}")]
-        [ProducesResponseType(typeof(User), StatusCodes.Status200OK)]
-        public ActionResult<User?> Get(int id)
+        [ProducesResponseType(typeof(UserDtoFnLn), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public ActionResult<UserDtoFnLn?> Get(int id)
         {
             User? user = Repository.GetItem(id);
+
             if (user is null) return NotFound();
 
-            return user;
+            return new UserDtoFnLn
+            {
+                FirstName = user.FirstName,
+                LastName = user.LastName
+            };
+        }
+
+        [HttpPost]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(UserDtoFull), StatusCodes.Status200OK)]
+        public ActionResult<UserDtoFull?> Post([FromBody] UserDtoFull? user)
+        {
+            if (user is null || user.Id is null) return BadRequest();
+
+            User newuser = Repository.Create(new User
+            {
+                Id = (int)user.Id, // casting from nullable int, already checked null above
+                FirstName = user.FirstName,
+                LastName = user.LastName
+            });
+
+            return new UserDtoFull
+            {
+                Id = newuser.Id,
+                FirstName = newuser.FirstName,
+                LastName = newuser.LastName
+            };
+        }
+
+        [HttpPut("{id}")]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public ActionResult Put(int id, [FromBody] UserDtoFnLn? user)
+        {
+            if (user is null) return BadRequest();
+
+            User? foundUser = Repository.GetItem(id);
+            if (foundUser is null) return NotFound();
+
+            foundUser.FirstName = user.FirstName ?? "";
+            foundUser.LastName = user.LastName ?? "";
+            Repository.Save(foundUser);
+
+            return Ok();
         }
 
         [HttpDelete("{id}")]
@@ -36,38 +96,7 @@ namespace SecretSanta.Api.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public ActionResult Delete(int id)
         {
-            if (Repository.Remove(id)) return Ok(); 
-
-            return NotFound();
-        }
-
-        [HttpPost]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(User), StatusCodes.Status200OK)]
-        public ActionResult<User?> Post([FromBody] User? user)
-        {
-            if (user is null) return BadRequest(); 
-
-            return Repository.Create(user);
-        }
-
-        [HttpPut("{id}")]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        public ActionResult Put(int id, [FromBody] User? user)
-        {
-            if (user is null) return BadRequest();
-
-            User? foundUser = Repository.GetItem(id);
-            if (foundUser is not null)
-            {
-                foundUser.FirstName = user.FirstName ?? "";
-                foundUser.LastName = user.LastName ?? "";
-
-                Repository.Save(foundUser);
-                return Ok();
-            }
+            if (Repository.Remove(id)) return Ok();
 
             return NotFound();
         }
