@@ -17,15 +17,15 @@ namespace SecretSanta.Web.Controllers
 
         public async Task<IActionResult> Index()
         {
-            ICollection<UserDtoFull> users = await Client.GetAllAsync();
+            ICollection<UserDtoFull?> users = await Client.GetAllAsync();
             List<UserViewModel> viewModelUsers = new();
-            foreach(UserDtoFull u in users)
+            foreach(UserDtoFull? u in users)
             {
-                if (u.Id is null) continue;
+                if ((u?.Id ?? null) is null) continue;
 
                 viewModelUsers.Add(new UserViewModel
                 {
-                    Id = (int)u.Id, // casting from nullable int, this entry is skipped if null
+                    Id = (int)u!.Id!, // casting from nullable int, this entry is skipped if null
                     FirstName = u.FirstName,
                     LastName = u.LastName
                 });

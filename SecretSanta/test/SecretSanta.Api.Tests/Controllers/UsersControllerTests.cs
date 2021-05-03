@@ -20,6 +20,8 @@ namespace SecretSanta.Api.Tests.Controllers
     {
         private WebApplicationFactory Factory { get; } = new();
 
+
+        #region GET() TESTS
         [TestMethod]
         public async Task Get_NoParams_ReturnsValidUsersList()
         {
@@ -45,7 +47,10 @@ namespace SecretSanta.Api.Tests.Controllers
                 Assert.AreEqual<string>(users[i].LastName!, dto!.LastName!);
             }
         }
+        #endregion GET() TESTS
 
+
+        #region GET(ID) TESTS
         [TestMethod]
         public async Task Get_GivenValidId_ReturnsValidDto()
         {
@@ -74,19 +79,26 @@ namespace SecretSanta.Api.Tests.Controllers
 
             Assert.AreEqual(HttpStatusCode.NotFound.GetTypeCode(), response.StatusCode.GetTypeCode());
         }
+        #endregion GET(ID) TESTS
 
-        [TestMethod]
-        public async Task Post_GivenValidUser_CreatesUser()
-        {
-            TestableUserRepository repo = Factory.Repo;
-            Assert.Fail();
-        }
 
+        #region POST(DTO) TESTS
         [TestMethod]
         public async Task Post_GivenValidUser_ReturnsValidDto()
         {
             TestableUserRepository repo = Factory.Repo;
-            Assert.Fail();
+            UserDtoFull newUser = new() { Id = 1, FirstName = "fn", LastName = "ln" };
+            User expected = new() { Id = (int)newUser.Id, FirstName = newUser.FirstName, LastName = newUser.LastName };
+            repo.CreateReturnUser = expected;
+            HttpClient client = Factory.CreateClient();
+
+            HttpResponseMessage response = await client.PostAsJsonAsync("/api/users/", newUser);
+            UserDtoFull? content = await response.Content.ReadFromJsonAsync<UserDtoFull?>();
+
+            response.EnsureSuccessStatusCode();
+            Assert.AreEqual<int>(expected.Id, content?.Id ?? -1);
+            Assert.AreEqual<string>(expected.FirstName, content!.FirstName!);
+            Assert.AreEqual<string>(expected.LastName, content!.LastName!);
         }
 
         [TestMethod]
@@ -94,7 +106,7 @@ namespace SecretSanta.Api.Tests.Controllers
         {
             HttpClient client = Factory.CreateClient();
 
-            HttpResponseMessage response = await client.PutAsJsonAsync<UserDtoFull>("/api/users/", null!);
+            HttpResponseMessage response = await client.PostAsJsonAsync<UserDtoFull>("/api/users/", null!);
 
             Assert.AreEqual(HttpStatusCode.BadRequest.GetTypeCode(), response.StatusCode.GetTypeCode());
         }
@@ -104,18 +116,20 @@ namespace SecretSanta.Api.Tests.Controllers
         {
             HttpClient client = Factory.CreateClient();
 
-            HttpResponseMessage response = await client.PutAsJsonAsync("/api/users/",
+            HttpResponseMessage response = await client.PostAsJsonAsync("/api/users/",
                 new UserDtoFull { Id = null!, FirstName = "", LastName = "" }
             );
 
             Assert.AreEqual(HttpStatusCode.BadRequest.GetTypeCode(), response.StatusCode.GetTypeCode());
         }
+        #endregion POST(DTO) TESTS
 
+
+        #region PUT(ID,DTO) TESTS
         [TestMethod]
         public async Task Put_GivenValidData_UpdatesUser()
         {
             TestableUserRepository repo = Factory.Repo;
-
             int updateId = 2;
             repo.GetItemReturnUser = new User { Id = updateId, FirstName = "Test", LastName = "User" };
             UserDtoFnLn updateUser = new() { FirstName = "Up", LastName = "Date" };
@@ -124,16 +138,38 @@ namespace SecretSanta.Api.Tests.Controllers
             HttpResponseMessage response = await client.PutAsJsonAsync("/api/users/"+updateId, updateUser);
 
             response.EnsureSuccessStatusCode();
-            Assert.AreEqual(updateId, repo.GetItemParamId);
-            Assert.AreEqual(updateUser.FirstName, repo.SaveParamItem?.FirstName);
-            Assert.AreEqual(updateUser.LastName, repo.SaveParamItem?.LastName);
+            Assert.AreEqual<int>(updateId, repo.GetItemParamId);
+            Assert.AreEqual<string>(updateUser.FirstName, repo.SaveParamItem?.FirstName);
+            Assert.AreEqual<string>(updateUser.LastName, repo.SaveParamItem?.LastName);
         }
 
+        [TestMethod]
+        public void Put_GivenInvalidUser_Returns400()
+        {
+            Assert.Fail();
+        }
+
+        [TestMethod]
+        public void Put_GivenInvalidId_Returns404()
+        {
+            Assert.Fail();
+        }
+        #endregion PUT(ID,DTO) TESTS
+
+
+        #region DELETE(ID) TESTS
         [TestMethod]
         public async Task Delete_GivenValidId_RemovesAppropriateUser()
         {
             TestableUserRepository repo = Factory.Repo;
-            Assert.Fail();
+            repo.RemoveReturnBool = true;
+            HttpClient client = Factory.CreateClient();
+            int removeId = 5;
+
+            HttpResponseMessage response = await client.DeleteAsync("/api/users/"+removeId);
+
+            response.EnsureSuccessStatusCode();
+            Assert.AreEqual<int>(removeId, repo.RemoveParamId);
         }
 
         [TestMethod]
@@ -143,9 +179,10 @@ namespace SecretSanta.Api.Tests.Controllers
             repo.RemoveReturnBool = false;
             HttpClient client = Factory.CreateClient();
 
-            HttpResponseMessage response = await client.PostAsJsonAsync("/api/users/",0);
+            HttpResponseMessage response = await client.DeleteAsync("/api/users/0");
 
             Assert.AreEqual(HttpStatusCode.NotFound.GetTypeCode(), response.StatusCode.GetTypeCode());
         }
+        #endregion DELETE(ID) TESTS
     }
 }
