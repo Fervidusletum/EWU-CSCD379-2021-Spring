@@ -19,7 +19,7 @@ namespace SecretSanta.Api.Controllers
 
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<UserDtoFull>),StatusCodes.Status200OK)]
-        public ActionResult<IEnumerable<UserDtoFull?>> Get()
+        public ActionResult<IEnumerable<UserDtoFull?>?> Get()
         {
             List<UserDtoFull?> dtos = new();
             foreach (User u in Repository.List())
@@ -56,11 +56,11 @@ namespace SecretSanta.Api.Controllers
         [ProducesResponseType(typeof(UserDtoFull), StatusCodes.Status200OK)]
         public ActionResult<UserDtoFull?> Post([FromBody] UserDtoFull? user)
         {
-            if (user is null || user.Id is null) return BadRequest();
+            if ((user?.Id ?? null) is null) return BadRequest();
 
             User newuser = Repository.Create(new User
             {
-                Id = (int)user.Id, // casting from nullable int, already checked null above
+                Id = (int)user!.Id!, // casting from nullable int, already checked null above
                 FirstName = user.FirstName,
                 LastName = user.LastName
             });

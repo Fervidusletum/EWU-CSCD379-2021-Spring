@@ -13,7 +13,7 @@ namespace SecretSanta.Web.Tests
 {
     public class WebApplicationFactory : WebApplicationFactory<Startup>
     {
-        private TestableUsersClient Client { get; } = new();
+        public TestableUsersClient Client { get; } = new();
 
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {

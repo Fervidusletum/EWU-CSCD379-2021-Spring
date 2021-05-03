@@ -10,19 +10,36 @@ namespace SecretSanta.Api.Tests.Business
 {
     public class TestableUserRepository : IUserRepository
     {
+        public User? CreateParamItem { get; set; }
+        public User? CreateReturnUser { get; set; }
         public User Create(User item)
-            => throw new NotImplementedException();
+        {
+            CreateParamItem = item;
+            return CreateReturnUser;
+        }
 
+        public int GetItemParamId { get; set; }
+        public User? GetItemReturnUser { get; set; }
         public User? GetItem(int id)
-            => throw new NotImplementedException();
+        {
+            GetItemParamId = id;
+            return GetItemReturnUser;
+        }
 
+        public List<User?> ListReturnUserCollection { get; } = new();
         public ICollection<User> List()
-            => throw new NotImplementedException();
+            => ListReturnUserCollection!;
 
+        public int RemoveParamId { get; set; }
+        public bool RemoveReturnBool { get; set; }
         public bool Remove(int id)
-            => throw new NotImplementedException();
+        {
+            RemoveParamId = id;
+            return RemoveReturnBool;
+        }
 
+        public User? SaveParamItem {get; set; }
         public void Save(User item)
-            => throw new NotImplementedException();
+            => SaveParamItem = item;
     }
 }

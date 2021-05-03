@@ -10,34 +10,49 @@ namespace SecretSanta.Web.Tests.Api
 {
     public class TestableUsersClient : IUsersClient
     {
-        public Task DeleteAsync(int id)
-            => throw new NotImplementedException();
-
-        public Task DeleteAsync(int id, CancellationToken cancellationToken)
-            => throw new NotImplementedException();
-
+        public int GetAllAsyncInvokeCount { get; set; }
+        public List<UserDtoFull> GetAllAsyncReturnUserList { get; } = new();
         public Task<ICollection<UserDtoFull>> GetAllAsync()
-            => throw new NotImplementedException();
+        {
+            GetAllAsyncInvokeCount++;
+            return Task.FromResult<ICollection<UserDtoFull>>(GetAllAsyncReturnUserList);
+        }
 
-        public Task<ICollection<UserDtoFull>> GetAllAsync(CancellationToken cancellationToken)
-            => throw new NotImplementedException();
-
+        public int GetAsyncInvokeCount { get; set; }
+        public UserDtoFnLn GetAsyncReturnUser { get; set; }
         public Task<UserDtoFnLn> GetAsync(int id)
-            => throw new NotImplementedException();
+        {
+            GetAsyncInvokeCount++;
+            return Task.FromResult<UserDtoFnLn>(GetAsyncReturnUser);
+        }
 
-        public Task<UserDtoFnLn> GetAsync(int id, CancellationToken cancellationToken)
-            => throw new NotImplementedException();
-
+        public int PostAsyncInvokeCount { get; set; }
+        public List<UserDtoFull> PostAsyncInvokeParams { get; } = new();
         public Task<UserDtoFull> PostAsync(UserDtoFull user)
-            => throw new NotImplementedException();
+        {
+            PostAsyncInvokeCount++;
+            PostAsyncInvokeParams.Add(user);
+            return Task.FromResult(user);
+        }
 
-        public Task<UserDtoFull> PostAsync(UserDtoFull user, CancellationToken cancellationToken)
-            => throw new NotImplementedException();
-
+        public int PutAsyncInvokeCount { get; set; }
         public Task PutAsync(int id, UserDtoFnLn user)
-            => throw new NotImplementedException();
+        {
+            PutAsyncInvokeCount++;
+            return Task.CompletedTask;
+        }
 
-        public Task PutAsync(int id, UserDtoFnLn user, CancellationToken cancellationToken)
-            => throw new NotImplementedException();
+        public int DeleteAsyncInvokeCount { get; set; }
+        public Task DeleteAsync(int id)
+        {
+            DeleteAsyncInvokeCount++;
+            return Task.CompletedTask;
+        }
+
+        public Task<ICollection<UserDtoFull>> GetAllAsync(CancellationToken cancellationToken) => throw new NotImplementedException();
+        public Task<UserDtoFnLn> GetAsync(int id, CancellationToken cancellationToken) => throw new NotImplementedException();
+        public Task<UserDtoFull> PostAsync(UserDtoFull user, CancellationToken cancellationToken) => throw new NotImplementedException();
+        public Task PutAsync(int id, UserDtoFnLn user, CancellationToken cancellationToken) => throw new NotImplementedException();
+        public Task DeleteAsync(int id, CancellationToken cancellationToken) => throw new NotImplementedException();
     }
 }

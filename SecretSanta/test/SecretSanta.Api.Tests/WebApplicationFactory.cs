@@ -13,7 +13,7 @@ namespace SecretSanta.Api.Tests
 {
     public class WebApplicationFactory : WebApplicationFactory<Startup>
     {
-        private TestableUserRepository Repo { get; } = new();
+        public TestableUserRepository Repo { get; } = new();
 
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
