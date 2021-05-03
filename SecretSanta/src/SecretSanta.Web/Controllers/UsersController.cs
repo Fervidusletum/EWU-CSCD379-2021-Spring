@@ -1,10 +1,9 @@
 using System;
 using System.Collections.Generic;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Http;
 using System.Threading.Tasks;
-using SecretSanta.Web.ViewModels;
+using Microsoft.AspNetCore.Mvc;
 using SecretSanta.Web.Api;
+using SecretSanta.Web.ViewModels;
 
 namespace SecretSanta.Web.Controllers
 {
@@ -19,7 +18,7 @@ namespace SecretSanta.Web.Controllers
         {
             ICollection<UserDtoFull?> users = await Client.GetAllAsync();
             List<UserViewModel> viewModelUsers = new();
-            foreach(UserDtoFull? u in users)
+            foreach (UserDtoFull? u in users)
             {
                 if ((u?.Id ?? null) is null) continue;
 

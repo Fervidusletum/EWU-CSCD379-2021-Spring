@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using SecretSanta.Business;
 using SecretSanta.Data;
 
@@ -15,7 +11,7 @@ namespace SecretSanta.Api.Tests.Business
         public User Create(User item)
         {
             CreateParamItem = item;
-            return CreateReturnUser;
+            return CreateReturnUser!;
         }
 
         public int GetItemParamId { get; set; }
@@ -38,7 +34,7 @@ namespace SecretSanta.Api.Tests.Business
             return RemoveReturnBool;
         }
 
-        public User? SaveParamItem {get; set; }
+        public User? SaveParamItem { get; set; }
         public void Save(User item)
             => SaveParamItem = item;
     }

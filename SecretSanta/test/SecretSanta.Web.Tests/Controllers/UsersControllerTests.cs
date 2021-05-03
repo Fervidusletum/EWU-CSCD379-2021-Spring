@@ -1,15 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
-using System.Net.Http.Json;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Newtonsoft.Json;
 using SecretSanta.Web.Api;
 using SecretSanta.Web.Tests.Api;
 using SecretSanta.Web.ViewModels;
@@ -31,7 +25,7 @@ namespace SecretSanta.Web.Tests
                 new UserDtoFull { Id = 0, FirstName = "F1", LastName = "L1" });
             HttpClient client = Factory.CreateClient();
 
-            HttpResponseMessage response = await client.GetAsync("/users/");
+            HttpResponseMessage response = await client.GetAsync(new Uri("/users/", UriKind.Relative));
 
             response.EnsureSuccessStatusCode();
             Assert.AreEqual(1, usersClient.GetAllAsyncInvokeCount);
@@ -44,7 +38,7 @@ namespace SecretSanta.Web.Tests
             usersClient.GetAllAsyncReturnUserList.Add(null!);
             HttpClient client = Factory.CreateClient();
 
-            HttpResponseMessage response = await client.GetAsync("/users/");
+            await client.GetAsync(new Uri("/users/", UriKind.Relative));
 
             return; // successful return is a passed assert
         }
@@ -57,7 +51,7 @@ namespace SecretSanta.Web.Tests
                 new UserDtoFull { Id = null!, FirstName = "F1", LastName = "L1" });
             HttpClient client = Factory.CreateClient();
 
-            HttpResponseMessage response = await client.GetAsync("/users/");
+            await client.GetAsync(new Uri("/users/", UriKind.Relative));
 
             return; // successful return is a passed assert
         }
@@ -71,8 +65,8 @@ namespace SecretSanta.Web.Tests
             TestableUsersClient usersClient = Factory.Client;
             HttpClient client = Factory.CreateClient();
             Dictionary<string, string?> values = new() { { nameof(UserViewModel.Id), "0" } };
-
-            HttpResponseMessage response = await client.PostAsync("/users/create/", 
+            
+            HttpResponseMessage response = await client.PostAsync(new Uri("/users/create/", UriKind.Relative),
                 new FormUrlEncodedContent(values));
 
             response.EnsureSuccessStatusCode();
@@ -92,7 +86,7 @@ namespace SecretSanta.Web.Tests
                 { nameof(UserViewModel.LastName), "l" }
             };
 
-            HttpResponseMessage response = await client.PostAsync("/users/create/",
+            HttpResponseMessage response = await client.PostAsync(new Uri("/users/create/", UriKind.Relative),
                 new FormUrlEncodedContent(values));
 
             response.EnsureSuccessStatusCode();
@@ -115,7 +109,7 @@ namespace SecretSanta.Web.Tests
                 { nameof(UserViewModel.LastName), null! }
             };
 
-            HttpResponseMessage response = await client.PostAsync("/users/create/",
+            HttpResponseMessage response = await client.PostAsync(new Uri("/users/create/", UriKind.Relative),
                 new FormUrlEncodedContent(values));
 
             response.EnsureSuccessStatusCode();
@@ -132,7 +126,7 @@ namespace SecretSanta.Web.Tests
             HttpClient client = Factory.CreateClient();
             usersClient.GetAsyncReturnUser = new UserDtoFnLn();
 
-            HttpResponseMessage response = await client.PutAsync("/users/edit/0", null!);
+            HttpResponseMessage response = await client.PutAsync(new Uri("/users/edit/0", UriKind.Relative), null!);
 
             response.EnsureSuccessStatusCode();
             Assert.AreEqual(1, usersClient.GetAsyncInvokeCount, "Incorrect number of invocations.");
@@ -147,9 +141,9 @@ namespace SecretSanta.Web.Tests
             TestableUsersClient usersClient = Factory.Client;
             HttpClient client = Factory.CreateClient();
             int id = 0;
-            Dictionary<string, string?> values = new() { { nameof(UserViewModel.Id), id+"" }, };
+            Dictionary<string, string?> values = new() { { nameof(UserViewModel.Id), id + "" }, };
 
-            HttpResponseMessage response = await client.PostAsync("/users/edit/"+id,
+            HttpResponseMessage response = await client.PostAsync(new Uri("/users/edit/" + id, UriKind.Relative),
                 new FormUrlEncodedContent(values));
 
             response.EnsureSuccessStatusCode();
@@ -164,18 +158,18 @@ namespace SecretSanta.Web.Tests
             int id = 0;
             Dictionary<string, string?> values = new()
             {
-                { nameof(UserViewModel.Id), id+"" },
+                { nameof(UserViewModel.Id), id + "" },
                 { nameof(UserViewModel.FirstName), "f" },
                 { nameof(UserViewModel.LastName), "l" }
             };
 
-            HttpResponseMessage response = await client.PostAsync("/users/edit/" + id,
+            HttpResponseMessage response = await client.PostAsync(new Uri("/users/edit/" + id, UriKind.Relative),
                 new FormUrlEncodedContent(values));
 
             response.EnsureSuccessStatusCode();
             UserDtoFnLn? result = usersClient.PutAsyncParamUser;
-            Assert.AreEqual<string>(values["FirstName"], result?.FirstName ?? "");
-            Assert.AreEqual<string>(values["LastName"], result?.LastName ?? "");
+            Assert.AreEqual<string>(values!["FirstName"]!, result?.FirstName ?? "");
+            Assert.AreEqual<string>(values!["LastName"]!, result?.LastName ?? "");
         }
         #endregion EDIT(USERVIEWMODEL) TESTS
 
@@ -187,7 +181,7 @@ namespace SecretSanta.Web.Tests
             TestableUsersClient usersClient = Factory.Client;
             HttpClient client = Factory.CreateClient();
 
-            HttpResponseMessage response = await client.PostAsync("/users/delete/0",
+            HttpResponseMessage response = await client.PostAsync(new Uri("/users/delete/0", UriKind.Relative),
                 new FormUrlEncodedContent(new Dictionary<string, string?>()));
 
             response.EnsureSuccessStatusCode();

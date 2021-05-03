@@ -1,10 +1,9 @@
 ﻿using System.Collections.Generic;
-using System.Net;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using SecretSanta.Api.Dto;
 using SecretSanta.Business;
 using SecretSanta.Data;
-using SecretSanta.Api.Dto;
 
 namespace SecretSanta.Api.Controllers
 {
@@ -18,7 +17,7 @@ namespace SecretSanta.Api.Controllers
             => Repository = repository ?? throw new System.ArgumentNullException(nameof(repository));
 
         [HttpGet]
-        [ProducesResponseType(typeof(IEnumerable<UserDtoFull>),StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(IEnumerable<UserDtoFull>), StatusCodes.Status200OK)]
         public ActionResult<IEnumerable<UserDtoFull?>?> Get()
         {
             List<UserDtoFull?> dtos = new();

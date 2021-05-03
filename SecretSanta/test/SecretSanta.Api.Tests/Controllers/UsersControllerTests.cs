@@ -5,12 +5,9 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SecretSanta.Api.Tests.Business;
 using SecretSanta.Api.Dto;
+using SecretSanta.Api.Tests.Business;
 using SecretSanta.Data;
 
 namespace SecretSanta.Api.Tests.Controllers
@@ -34,7 +31,7 @@ namespace SecretSanta.Api.Tests.Controllers
             repo.ListReturnUserCollection.AddRange(users);
             HttpClient client = Factory.CreateClient();
 
-            HttpResponseMessage response = await client.GetAsync("/api/users/");
+            HttpResponseMessage response = await client.GetAsync(new Uri("/api/users/", UriKind.Relative));
             List<UserDtoFull?>? content = await response.Content.ReadFromJsonAsync<List<UserDtoFull?>?>();
 
             response.EnsureSuccessStatusCode();
@@ -55,11 +52,11 @@ namespace SecretSanta.Api.Tests.Controllers
         public async Task Get_GivenValidId_ReturnsValidDto()
         {
             TestableUserRepository repo = Factory.Repo;
-            User user = new User { Id = 1, FirstName = "F2", LastName = "L2" };
+            User user = new() { Id = 1, FirstName = "F2", LastName = "L2" };
             repo.GetItemReturnUser = user;
             HttpClient client = Factory.CreateClient();
 
-            HttpResponseMessage response = await client.GetAsync("/api/users/"+user.Id);
+            HttpResponseMessage response = await client.GetAsync(new Uri("/api/users/" + user.Id, UriKind.Relative));
             UserDtoFnLn? content = await response.Content.ReadFromJsonAsync<UserDtoFnLn?>();
 
             response.EnsureSuccessStatusCode();
@@ -75,7 +72,7 @@ namespace SecretSanta.Api.Tests.Controllers
             repo.GetItemReturnUser = null!;
             HttpClient client = Factory.CreateClient();
 
-            HttpResponseMessage response = await client.GetAsync("/api/users/0");
+            HttpResponseMessage response = await client.GetAsync(new Uri("/api/users/0", UriKind.Relative));
 
             Assert.AreEqual(HttpStatusCode.NotFound.GetTypeCode(), response.StatusCode.GetTypeCode());
         }
@@ -92,7 +89,7 @@ namespace SecretSanta.Api.Tests.Controllers
             repo.CreateReturnUser = expected;
             HttpClient client = Factory.CreateClient();
 
-            HttpResponseMessage response = await client.PostAsJsonAsync("/api/users/", newUser);
+            HttpResponseMessage response = await client.PostAsJsonAsync(new Uri("/api/users/", UriKind.Relative), newUser);
             UserDtoFull? content = await response.Content.ReadFromJsonAsync<UserDtoFull?>();
 
             response.EnsureSuccessStatusCode();
@@ -106,7 +103,7 @@ namespace SecretSanta.Api.Tests.Controllers
         {
             HttpClient client = Factory.CreateClient();
 
-            HttpResponseMessage response = await client.PostAsJsonAsync<UserDtoFull>("/api/users/", null!);
+            HttpResponseMessage response = await client.PostAsJsonAsync<UserDtoFull>(new Uri("/api/users/", UriKind.Relative), null!);
 
             Assert.AreEqual(HttpStatusCode.BadRequest.GetTypeCode(), response.StatusCode.GetTypeCode());
         }
@@ -116,7 +113,7 @@ namespace SecretSanta.Api.Tests.Controllers
         {
             HttpClient client = Factory.CreateClient();
 
-            HttpResponseMessage response = await client.PostAsJsonAsync("/api/users/",
+            HttpResponseMessage response = await client.PostAsJsonAsync(new Uri("/api/users/", UriKind.Relative),
                 new UserDtoFull { Id = null!, FirstName = "", LastName = "" }
             );
 
@@ -135,12 +132,12 @@ namespace SecretSanta.Api.Tests.Controllers
             UserDtoFnLn updateUser = new() { FirstName = "Up", LastName = "Date" };
             HttpClient client = Factory.CreateClient();
 
-            HttpResponseMessage response = await client.PutAsJsonAsync("/api/users/"+updateId, updateUser);
+            HttpResponseMessage response = await client.PutAsJsonAsync(new Uri("/api/users/" + updateId, UriKind.Relative), updateUser);
 
             response.EnsureSuccessStatusCode();
             Assert.AreEqual<int>(updateId, repo.GetItemParamId);
-            Assert.AreEqual<string>(updateUser.FirstName, repo.SaveParamItem?.FirstName);
-            Assert.AreEqual<string>(updateUser.LastName, repo.SaveParamItem?.LastName);
+            Assert.AreEqual<string>(updateUser.FirstName, repo.SaveParamItem?.FirstName!);
+            Assert.AreEqual<string>(updateUser.LastName, repo.SaveParamItem?.LastName!);
         }
 
         [TestMethod]
@@ -148,7 +145,7 @@ namespace SecretSanta.Api.Tests.Controllers
         {
             HttpClient client = Factory.CreateClient();
 
-            HttpResponseMessage response = await client.PutAsJsonAsync<UserDtoFnLn>("/api/users/0", null!);
+            HttpResponseMessage response = await client.PutAsJsonAsync<UserDtoFnLn>(new Uri("/api/users/0", UriKind.Relative), null!);
 
             Assert.AreEqual(HttpStatusCode.BadRequest.GetTypeCode(), response.StatusCode.GetTypeCode());
         }
@@ -159,7 +156,8 @@ namespace SecretSanta.Api.Tests.Controllers
             HttpClient client = Factory.CreateClient();
             Factory.Repo.GetItemReturnUser = null!;
 
-            HttpResponseMessage response = await client.PutAsJsonAsync("/api/users/0", new User { FirstName = "f", LastName = "l" });
+            HttpResponseMessage response = await client.PutAsJsonAsync(new Uri("/api/users/0", UriKind.Relative),
+                new User { FirstName = "f", LastName = "l" });
 
             Assert.AreEqual(HttpStatusCode.NotFound.GetTypeCode(), response.StatusCode.GetTypeCode());
         }
@@ -175,7 +173,7 @@ namespace SecretSanta.Api.Tests.Controllers
             HttpClient client = Factory.CreateClient();
             int removeId = 5;
 
-            HttpResponseMessage response = await client.DeleteAsync("/api/users/"+removeId);
+            HttpResponseMessage response = await client.DeleteAsync(new Uri("/api/users/" + removeId, UriKind.Relative));
 
             response.EnsureSuccessStatusCode();
             Assert.AreEqual<int>(removeId, repo.RemoveParamId);
@@ -188,7 +186,7 @@ namespace SecretSanta.Api.Tests.Controllers
             repo.RemoveReturnBool = false;
             HttpClient client = Factory.CreateClient();
 
-            HttpResponseMessage response = await client.DeleteAsync("/api/users/0");
+            HttpResponseMessage response = await client.DeleteAsync(new Uri("/api/users/0", UriKind.Relative));
 
             Assert.AreEqual(HttpStatusCode.NotFound.GetTypeCode(), response.StatusCode.GetTypeCode());
         }
