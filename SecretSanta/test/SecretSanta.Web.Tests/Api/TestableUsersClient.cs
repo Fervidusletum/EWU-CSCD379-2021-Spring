@@ -27,18 +27,20 @@ namespace SecretSanta.Web.Tests.Api
         }
 
         public int PostAsyncInvokeCount { get; set; }
-        public List<UserDtoFull> PostAsyncInvokeParams { get; } = new();
+        public List<UserDtoFull> PostAsyncParams { get; } = new();
         public Task<UserDtoFull> PostAsync(UserDtoFull user)
         {
             PostAsyncInvokeCount++;
-            PostAsyncInvokeParams.Add(user);
+            PostAsyncParams.Add(user);
             return Task.FromResult(user);
         }
 
         public int PutAsyncInvokeCount { get; set; }
+        public UserDtoFnLn PutAsyncParamUser { get; set; }
         public Task PutAsync(int id, UserDtoFnLn user)
         {
             PutAsyncInvokeCount++;
+            PutAsyncParamUser = user;
             return Task.CompletedTask;
         }
 

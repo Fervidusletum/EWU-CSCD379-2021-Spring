@@ -144,15 +144,24 @@ namespace SecretSanta.Api.Tests.Controllers
         }
 
         [TestMethod]
-        public void Put_GivenInvalidUser_Returns400()
+        public async Task Put_GivenInvalidUser_Returns400()
         {
-            Assert.Fail();
+            HttpClient client = Factory.CreateClient();
+
+            HttpResponseMessage response = await client.PutAsJsonAsync<UserDtoFnLn>("/api/users/0", null!);
+
+            Assert.AreEqual(HttpStatusCode.BadRequest.GetTypeCode(), response.StatusCode.GetTypeCode());
         }
 
         [TestMethod]
-        public void Put_GivenInvalidId_Returns404()
+        public async Task Put_GivenInvalidId_Returns404()
         {
-            Assert.Fail();
+            HttpClient client = Factory.CreateClient();
+            Factory.Repo.GetItemReturnUser = null!;
+
+            HttpResponseMessage response = await client.PutAsJsonAsync("/api/users/0", new User { FirstName = "f", LastName = "l" });
+
+            Assert.AreEqual(HttpStatusCode.NotFound.GetTypeCode(), response.StatusCode.GetTypeCode());
         }
         #endregion PUT(ID,DTO) TESTS
 

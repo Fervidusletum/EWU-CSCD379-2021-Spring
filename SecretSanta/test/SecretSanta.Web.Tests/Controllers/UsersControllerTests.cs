@@ -9,8 +9,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json;
 using SecretSanta.Web.Api;
 using SecretSanta.Web.Tests.Api;
+using SecretSanta.Web.ViewModels;
 
 namespace SecretSanta.Web.Tests
 {
@@ -27,8 +29,6 @@ namespace SecretSanta.Web.Tests
             TestableUsersClient usersClient = Factory.Client;
             usersClient.GetAllAsyncReturnUserList.Add(
                 new UserDtoFull { Id = 0, FirstName = "F1", LastName = "L1" });
-            usersClient.GetAllAsyncReturnUserList.Add(
-                new UserDtoFull { Id = 1, FirstName = "F2", LastName = "L2" });
             HttpClient client = Factory.CreateClient();
 
             HttpResponseMessage response = await client.GetAsync("/users/");
@@ -38,105 +38,160 @@ namespace SecretSanta.Web.Tests
         }
 
         [TestMethod]
-        public void Index_RetreivesValidDtoList_CreatesValidViewModelList()
+        public async Task Index_GivenANullDto_DoesntExplode()
         {
-            Assert.Fail();
+            TestableUsersClient usersClient = Factory.Client;
+            usersClient.GetAllAsyncReturnUserList.Add(null!);
+            HttpClient client = Factory.CreateClient();
+
+            HttpResponseMessage response = await client.GetAsync("/users/");
+
+            return; // successful return is a passed assert
         }
 
         [TestMethod]
-        public void Index_GivenANullDto_DoesntExplode()
+        public async Task Index_GivenANullIndex_DoesntExplode()
         {
-            Assert.Fail();
-        }
+            TestableUsersClient usersClient = Factory.Client;
+            usersClient.GetAllAsyncReturnUserList.Add(
+                new UserDtoFull { Id = null!, FirstName = "F1", LastName = "L1" });
+            HttpClient client = Factory.CreateClient();
 
-        [TestMethod]
-        public void Index_GivenANullIndex_DoesntExplode()
-        {
-            Assert.Fail();
+            HttpResponseMessage response = await client.GetAsync("/users/");
+
+            return; // successful return is a passed assert
         }
         #endregion INDEX() TESTS
 
 
         #region CREATE(USERVIEWMODEL) TESTS
         [TestMethod]
-        public void Create_GivenValidModel_InvokesPostAsync()
+        public async Task Create_GivenValidModel_InvokesPostAsync()
         {
-            Assert.Fail();
+            TestableUsersClient usersClient = Factory.Client;
+            HttpClient client = Factory.CreateClient();
+            Dictionary<string, string?> values = new() { { nameof(UserViewModel.Id), "0" } };
+
+            HttpResponseMessage response = await client.PostAsync("/users/create/", 
+                new FormUrlEncodedContent(values));
+
+            response.EnsureSuccessStatusCode();
+            Assert.AreEqual(1, usersClient.PostAsyncInvokeCount, "Incorrect number of invocations.");
+            Assert.IsTrue(usersClient.PostAsyncParams.Any(), "No params passed in.");
         }
 
         [TestMethod]
-        public void Create_GivenValidModel_RedirectsToIndex()
+        public async Task Create_GivenValidModel_SendsValidDtos()
         {
-            Assert.Fail();
+            TestableUsersClient usersClient = Factory.Client;
+            HttpClient client = Factory.CreateClient();
+            Dictionary<string, string?> values = new()
+            {
+                { nameof(UserViewModel.Id), "0" },
+                { nameof(UserViewModel.FirstName), "f" },
+                { nameof(UserViewModel.LastName), "l" }
+            };
+
+            HttpResponseMessage response = await client.PostAsync("/users/create/",
+                new FormUrlEncodedContent(values));
+
+            response.EnsureSuccessStatusCode();
+            UserDtoFull? result = usersClient.PostAsyncParams.FirstOrDefault();
+            Assert.IsNotNull(result, "No param received.");
+            Assert.AreEqual<int>(int.Parse(values["Id"]!), result!.Id ?? -1);
+            Assert.AreEqual<string>(values["FirstName"]!, result!.FirstName);
+            Assert.AreEqual<string>(values["LastName"]!, result!.LastName);
         }
 
         [TestMethod]
-        public void Create_GivenValidModel_ReturnsValidViewModel()
+        public async Task Create_GivenInvalidModel_DoesntInvokePostAsync()
         {
-            Assert.Fail();
-        }
+            TestableUsersClient usersClient = Factory.Client;
+            HttpClient client = Factory.CreateClient();
+            Dictionary<string, string?> values = new()
+            {
+                { nameof(UserViewModel.Id), null! },
+                { nameof(UserViewModel.FirstName), null! },
+                { nameof(UserViewModel.LastName), null! }
+            };
 
-        [TestMethod]
-        public void Create_GivenInvalidModel_ReturnsSameViewModel()
-        {
-            Assert.Fail();
+            HttpResponseMessage response = await client.PostAsync("/users/create/",
+                new FormUrlEncodedContent(values));
+
+            response.EnsureSuccessStatusCode();
+            Assert.AreEqual(0, usersClient.PostAsyncInvokeCount, "Incorrect number of invocations.");
         }
         #endregion CREATE(USERVIEWMODEL) TESTS
 
 
         #region EDIT(ID) TESTS
         [TestMethod]
-        public void Edit_GivenId_InvokesGetAsyncUsingId()
+        public async Task Edit_GivenId_InvokesGetAsyncUsingId()
         {
-            Assert.Fail();
-        }
+            TestableUsersClient usersClient = Factory.Client;
+            HttpClient client = Factory.CreateClient();
+            usersClient.GetAsyncReturnUser = new UserDtoFnLn();
 
-        [TestMethod]
-        public void Edit_GivenId_ReturnsValidViewModel()
-        {
-            Assert.Fail();
+            HttpResponseMessage response = await client.PutAsync("/users/edit/0", null!);
+
+            response.EnsureSuccessStatusCode();
+            Assert.AreEqual(1, usersClient.GetAsyncInvokeCount, "Incorrect number of invocations.");
         }
         #endregion EDIT(ID) TESTS
 
 
         #region EDIT(USERVIEWMODEL) TESTS
         [TestMethod]
-        public void Edit_GivenValidViewModel_InvokesPutAsync()
+        public async Task Edit_GivenValidViewModel_InvokesPutAsync()
         {
-            Assert.Fail();
+            TestableUsersClient usersClient = Factory.Client;
+            HttpClient client = Factory.CreateClient();
+            int id = 0;
+            Dictionary<string, string?> values = new() { { nameof(UserViewModel.Id), id+"" }, };
+
+            HttpResponseMessage response = await client.PostAsync("/users/edit/"+id,
+                new FormUrlEncodedContent(values));
+
+            response.EnsureSuccessStatusCode();
+            Assert.AreEqual(1, usersClient.PutAsyncInvokeCount, "Incorrect number of invocations.");
         }
 
         [TestMethod]
-        public void Edit_GivenValidViewModel_RedirectsToIndex()
+        public async Task Edit_GivenValidViewModel_SendsValidDto()
         {
-            Assert.Fail();
-        }
+            TestableUsersClient usersClient = Factory.Client;
+            HttpClient client = Factory.CreateClient();
+            int id = 0;
+            Dictionary<string, string?> values = new()
+            {
+                { nameof(UserViewModel.Id), id+"" },
+                { nameof(UserViewModel.FirstName), "f" },
+                { nameof(UserViewModel.LastName), "l" }
+            };
 
-        [TestMethod]
-        public void Edit_GivenValidViewModel_PutsValidDto()
-        {
-            Assert.Fail();
-        }
+            HttpResponseMessage response = await client.PostAsync("/users/edit/" + id,
+                new FormUrlEncodedContent(values));
 
-        [TestMethod]
-        public void Edit_GivenInvalidViewModel_ReturnsSameViewModel()
-        {
-            Assert.Fail();
+            response.EnsureSuccessStatusCode();
+            UserDtoFnLn? result = usersClient.PutAsyncParamUser;
+            Assert.AreEqual<string>(values["FirstName"], result?.FirstName ?? "");
+            Assert.AreEqual<string>(values["LastName"], result?.LastName ?? "");
         }
         #endregion EDIT(USERVIEWMODEL) TESTS
 
 
         #region DELETE(ID) TESTS
         [TestMethod]
-        public void Delete_GivenId_InvokesDeleteAsync()
+        public async Task Delete_GivenId_InvokesDeleteAsync()
         {
-            Assert.Fail();
-        }
+            TestableUsersClient usersClient = Factory.Client;
+            HttpClient client = Factory.CreateClient();
 
-        [TestMethod]
-        public void Delete_GivenId_RedirectsToIndex()
-        {
-            Assert.Fail();
+            HttpResponseMessage response = await client.PostAsync("/users/delete/0",
+                new FormUrlEncodedContent(new Dictionary<string, string?>()));
+
+            response.EnsureSuccessStatusCode();
+            Assert.AreEqual(1, usersClient.DeleteAsyncInvokeCount, "Incorrect number of invocations.");
         }
         #endregion DELETE(ID) TESTS
     }
