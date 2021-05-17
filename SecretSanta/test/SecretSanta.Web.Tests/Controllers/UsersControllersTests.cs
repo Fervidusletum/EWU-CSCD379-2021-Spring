@@ -10,6 +10,7 @@ using SecretSanta.Web.ViewModels;
 namespace SecretSanta.Web.Tests.Controllers
 {
     [TestClass]
+    [Ignore("Removed controller logic and replaced it with JS in views.")]
     public class UsersControllersTests
     {
         [TestMethod]

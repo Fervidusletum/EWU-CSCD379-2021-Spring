@@ -1,15 +1,15 @@
-@model UserViewModel
 
-<div asp-validation-summary="All"></div>
 <div class="mb-6">
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
-            <label class="text-gray-500 font-bold text-right" asp-for="FirstName"></label>
-            <input class="w-full border-b-2 border-green-300 focus:border-green-600 focus:ring-transparent focus:outline-none" type="text" asp-for="FirstName" />
+            <label class="text-gray-500 font-bold text-right" for="FirstName">First Name</label>
+            <input class="w-full border-b-2 border-green-300 focus:border-green-600 focus:ring-transparent focus:outline-none"
+                   type="text" x-model="user.firstName" id="FirstName" name="FirstName" />
         </div>
         <div>
-            <label class="text-gray-500 font-bold text-right" asp-for="LastName"></label>
-            <input class="w-full border-b-2 border-green-300 focus:border-green-600 focus:ring-transparent focus:outline-none" type="text" asp-for="LastName" />
+            <label class="text-gray-500 font-bold text-right" for="LastName">Last Name</label>
+            <input class="w-full border-b-2 border-green-300 focus:border-green-600 focus:ring-transparent focus:outline-none"
+                   type="text" x-model="user.lastName" id="LastName" name="LastName"/>
         </div>
     </div>
 </div>
