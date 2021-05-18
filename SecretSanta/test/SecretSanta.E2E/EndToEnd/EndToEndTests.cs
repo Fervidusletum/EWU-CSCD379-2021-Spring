@@ -137,7 +137,7 @@ namespace SecretSanta.E2E
             await page.ClickAsync("body > section > section > section:last-child > a > section > form > button");
 
             int numGiftsAfterDelete = (await page.QuerySelectorAllAsync("body > section > section > section")).Count();
-            Assert.AreEqual<int>(numGifts - 1, numGiftsAfterCreate, "Number of gifts did not decrease by one after deletion.");
+            Assert.AreEqual<int>(numGifts - 1, numGiftsAfterDelete, "Number of gifts did not decrease by one after deletion.");
         }
     }
 }
