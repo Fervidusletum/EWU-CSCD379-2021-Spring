@@ -10,6 +10,7 @@ namespace SecretSanta.Business
         bool Remove(int id);
         Group Create(Group item);
         void Save(Group item);
+        AssignmentResult GenerateAssignments(int id);
     }
 
 }
