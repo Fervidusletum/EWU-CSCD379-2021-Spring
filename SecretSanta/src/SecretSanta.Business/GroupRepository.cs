@@ -8,10 +8,9 @@ namespace SecretSanta.Business
 {
     public class GroupRepository : IGroupRepository
     {
-        public delegate List<User> Shuffler(ICollection<User> list);
-        private Shuffler ShuffleList { get; }
+        public Func<ICollection<User>,List<User>> ShuffleList { get; }
         public GroupRepository() : this(null) { }
-        public GroupRepository(Shuffler? shuffle)
+        public GroupRepository(Func<ICollection<User>, List<User>>? shuffle)
             => ShuffleList = shuffle ?? ( (ICollection<User> list) => list.Shuffle().ToList() );
 
         public Group Create(Group item)

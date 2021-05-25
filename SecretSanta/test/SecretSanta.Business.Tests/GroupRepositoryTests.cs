@@ -163,7 +163,7 @@ namespace SecretSanta.Business.Tests
         [TestMethod]
         public void GenerateAssignments_UsingGivenOrderingFunction_ShufflesAssignmentsInGivenOrder()
         {
-            GroupRepository.Shuffler shuffle = (ICollection<User> users) => users.AsEnumerable().Reverse().ToList();
+            Func<ICollection<User>, List<User>> shuffle = (ICollection<User> users) => users.AsEnumerable().Reverse().ToList();
             GroupRepository sut = new(shuffle);
             Group group = sut.Create(new()
             {
