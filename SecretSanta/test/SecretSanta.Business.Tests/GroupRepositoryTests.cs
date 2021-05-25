@@ -117,7 +117,8 @@ namespace SecretSanta.Business.Tests
         {
             GroupRepository sut = new();
 
-            AssignmentResult result = sut.GenerateAssignments(42);
+            // idx 42 was causing intermittent failure of test when certain other tests had been run
+            AssignmentResult result = sut.GenerateAssignments(420);
 
             Assert.AreEqual("Group not found", result.ErrorMessage);
         }
@@ -146,9 +147,9 @@ namespace SecretSanta.Business.Tests
                 Id = 42,
                 Name = "Group"
             });
-            group.Users.Add(new User { FirstName = "John", LastName = "Doe" });
-            group.Users.Add(new User { FirstName = "Jane", LastName = "Smith" });
-            group.Users.Add(new User { FirstName = "Bob", LastName = "Jones" });
+            group.Users.Add(new User { FirstName = "John", LastName = "Doe", Id = 1 });
+            group.Users.Add(new User { FirstName = "Jane", LastName = "Smith", Id = 2 });
+            group.Users.Add(new User { FirstName = "Bob", LastName = "Jones", Id = 3 });
 
             AssignmentResult result = sut.GenerateAssignments(42);
 
@@ -157,6 +158,33 @@ namespace SecretSanta.Business.Tests
             Assert.AreEqual(3, group.Assignments.Select(x => x.Giver.FirstName).Distinct().Count());
             Assert.AreEqual(3, group.Assignments.Select(x => x.Receiver.FirstName).Distinct().Count());
             Assert.IsFalse(group.Assignments.Any(x => x.Giver.FirstName == x.Receiver.FirstName));
+        }
+
+        [TestMethod]
+        public void GenerateAssignments_UsingGivenOrderingFunction_ShufflesAssignmentsInGivenOrder()
+        {
+            GroupRepository.Shuffler shuffle = (ICollection<User> users) => users.AsEnumerable().Reverse().ToList();
+            GroupRepository sut = new(shuffle);
+            Group group = sut.Create(new()
+            {
+                Id = 42,
+                Name = "Group"
+            });
+            group.Users.Add(new User { FirstName = "John", LastName = "Doe", Id = 1 });
+            group.Users.Add(new User { FirstName = "Jane", LastName = "Smith", Id = 2 });
+            group.Users.Add(new User { FirstName = "Bob", LastName = "Jones", Id = 3 });
+
+            // because I want to use the linq reverse, which does not operate in place
+            List<User> expected = group.Users.AsEnumerable().Reverse().ToList();
+            expected.Add(expected.First()); // avoiding modulo logic for circular linking
+
+            AssignmentResult result = sut.GenerateAssignments(42);
+
+            for(int i = 0; i < expected.Count-1; i++)
+            {
+                Assert.AreEqual<int>(expected[i].Id, group.Assignments[i].Giver.Id, $"expected {i} does not match Assignment {i} Giver");
+                Assert.AreEqual<int>(expected[i+1].Id, group.Assignments[i].Receiver.Id, $"expected {i+1} does not match Assignment {i} Receiver");
+            }
         }
     }
 }

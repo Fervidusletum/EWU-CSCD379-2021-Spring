@@ -731,7 +731,7 @@ namespace SecretSanta.Web.Api
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
                     request_.Content = new System.Net.Http.StringContent(string.Empty, System.Text.Encoding.UTF8, "application/json");
-                    request_.Method = new System.Net.Http.HttpMethod("POST");
+                    request_.Method = new System.Net.Http.HttpMethod("PUT");
     
                     PrepareRequest(client_, request_, urlBuilder_);
     

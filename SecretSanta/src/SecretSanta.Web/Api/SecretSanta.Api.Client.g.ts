@@ -437,7 +437,7 @@ export class GroupsClient implements IGroupsClient {
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ = <AxiosRequestConfig>{
-            method: "POST",
+            method: "PUT",
             url: url_,
             headers: {
             },

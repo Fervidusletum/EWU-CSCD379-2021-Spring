@@ -110,7 +110,7 @@ namespace SecretSanta.Api.Controllers
             return NotFound();
         }
 
-        [HttpPost("{id}/assign")]
+        [HttpPut("{id}/assign")]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.BadRequest)]
         public ActionResult GenerateAssignments(int id)
