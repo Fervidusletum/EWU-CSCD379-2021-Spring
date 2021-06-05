@@ -14,7 +14,7 @@ namespace SecretSanta.Data
 
             static void PutUserInGroup(User user, Group group)
             {
-                user.UserGroups.Add(group);
+                user.Groups.Add(group);
                 group.Users.Add(user);
             }
         }

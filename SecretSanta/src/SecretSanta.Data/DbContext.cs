@@ -33,15 +33,14 @@ namespace SecretSanta.Data
 
             modelBuilder.Entity<Group>()
                 .HasMany(g => g.Users)
-                .WithMany(u => u.UserGroups);
+                .WithMany(u => u.Groups);
 
             modelBuilder.Entity<Group>()
                 .HasMany(g => g.Assignments)
                 .WithOne(a => a.group);
 
-            //modelBuilder.Entity<Gift>().HasOne(g => g.Receiver).WithMany(u => u.Gifts);
             modelBuilder.Entity<User>()
-                .HasMany(u => u.UserGifts)
+                .HasMany(u => u.Gifts)
                 .WithOne(g => g.Receiver);
 
             //modelBuilder.Entity<Assignment>().HasOne(u => u.Giver).WithMany();

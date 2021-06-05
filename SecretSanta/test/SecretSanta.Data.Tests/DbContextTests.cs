@@ -26,7 +26,8 @@ namespace SecretSanta.Data.Tests
                 .UseSqlite(CreateInMemoryDatabase())
                 .Options;
             Connection = RelationalOptionsExtension.Extract(ContextOptions).Connection;
-            Seed();
+            //Seed(); // not sure why, but seeding from constructor isnt populating data correctly (this was before making it async with param)
+            // whereas it's demonstrated in the example at https://docs.microsoft.com/en-us/ef/core/testing/testing-sample#setting-up-and-seeding-the-database
         }
 
         private static DbConnection CreateInMemoryDatabase()
@@ -36,13 +37,12 @@ namespace SecretSanta.Data.Tests
             return connection;
         }
 
-        private void Seed()
+        public void Dispose() => Connection.Dispose();
+
+        async private Task Seed(DbContext dbContext)
         {
-            using DbContext dbContext = new(ContextOptions);
             dbContext.Database.EnsureDeleted();
             dbContext.Database.Migrate();
-
-            Group testGroup = new Group { Name = $"{SeedStr}Group" };
 
             List<User> users = new();
             for (int i = 0; i < 3; i++)
@@ -52,8 +52,7 @@ namespace SecretSanta.Data.Tests
                     FirstName = Guid.NewGuid().ToString(),
                     LastName = $"{SeedStr}user"
                 };
-                u.UserGroups.Add(testGroup);
-                u.UserGifts.Add(new Gift
+                u.Gifts.Add(new Gift
                 {
                     Title = $"{SeedStr}Gift {Guid.NewGuid()}",
                     Priority = 1
@@ -61,29 +60,88 @@ namespace SecretSanta.Data.Tests
                 users.Add(u);
             }
 
+            Group testGroup = new Group { Name = $"{SeedStr}Group" };
             testGroup.Users.AddRange(users);
+
             testGroup.Assignments.Add(new Assignment(users[0], users[1]));
             testGroup.Assignments.Add(new Assignment(users[1], users[2]));
             testGroup.Assignments.Add(new Assignment(users[2], users[0]));
 
             dbContext.Groups.Add(testGroup);
-            dbContext.SaveChanges();
+            await dbContext.SaveChangesAsync();
         }
-
-        public void Dispose() => Connection.Dispose();
 
         #endregion
 
+        #region Auto-Populate Tests
 
         [TestMethod]
-        public void DbContext_GetUser_IsNotNull()
+        async public Task DbContext_DataIsSeeded_GroupPopulated()
         {
             using DbContext dbContext = new(ContextOptions);
+            await Seed(dbContext);
 
-            User? usr = dbContext.Users.FirstOrDefault<User>(u => u.LastName.StartsWith(SeedStr));
+            Group? actual = dbContext.Groups.FirstOrDefault<Group>();
 
-            Assert.IsNotNull(usr);
+            Assert.IsNotNull(actual);
         }
+
+        [TestMethod]
+        async public Task Gift_ReceiverAutoPopulated_MatchesUser()
+        {
+            using DbContext dbContext = new(ContextOptions);
+            await Seed(dbContext);
+
+            User expected = dbContext.Users.First<User>();
+            User? actual = expected.Gifts.First<Gift>().Receiver;
+
+            Assert.IsNotNull(actual, $"{nameof(Gift.Receiver)} is not populated.");
+            Assert.AreEqual<string>(expected.FirstName, actual.FirstName, "Users dont match.");
+        }
+
+        [TestMethod]
+        async public Task Gift_AutoPopulatedInDbContext_MatchesGiftFromUser()
+        {
+            using DbContext dbContext = new(ContextOptions);
+            await Seed(dbContext);
+
+            Gift expected = dbContext.Users.First<User>().Gifts.First<Gift>();
+            Gift? actual = dbContext.Gifts.FirstOrDefault<Gift>(g => g.Id == expected.Id);
+
+            Assert.IsNotNull(actual, $"{nameof(Gift)} not found.");
+            Assert.AreEqual<string>(expected.Title, actual!.Title, $"{nameof(Gift)} don't match.");
+        }
+
+        [TestMethod]
+        async public Task User_AutoPopulatedInDbContext_MatchesFromGroup()
+        {
+            using DbContext dbContext = new(ContextOptions);
+            await Seed(dbContext);
+
+            User expected = dbContext.Groups.First<Group>().Users.First<User>();
+            User? actual = dbContext.Users.FirstOrDefault<User>(u => u.Id == expected.Id);
+
+            Assert.IsNotNull(actual);
+            Assert.AreEqual<string>(expected.FirstName, actual!.FirstName);
+        }
+
+
+        [TestMethod]
+        async public Task Group_AutoPopulatedInUser_MatchesFromUser()
+        {
+            using DbContext dbContext = new(ContextOptions);
+            await Seed(dbContext);
+
+            Group expected = dbContext.Groups.First<Group>();
+            Group? actual = dbContext.Users.First<User>().Groups.FirstOrDefault<Group>();
+
+            Assert.IsNotNull(actual);
+            Assert.AreEqual<string>(expected.Name, actual!.Name);
+        }
+
+        #endregion
+
+        #region DB Manipulation Tests
 
         [TestMethod]
         async public Task DbContext_AddingUser_CountIncrementsByOne()
@@ -148,38 +206,6 @@ namespace SecretSanta.Data.Tests
             }
         }
 
-
-        // something's weird on this test, it has missing data depending on order stuff is retreived
-        [TestMethod]
-        public void DbContext_GetGiftViaDbList_IsLinkedBackToUser()
-        {
-            using DbContext dbContext = new(ContextOptions);
-            User? firstUser = dbContext.Users.FirstOrDefault<User>();
-            Assert.IsNotNull(firstUser, "Could not get first user.");
-
-            Gift? giftFromList = dbContext.Gifts.FirstOrDefault<Gift>();
-            Assert.IsNotNull(giftFromList, "Could not get gift from DB list.");
-            User? actual = giftFromList!.Receiver;
-            Assert.IsNotNull(actual, "Could not get user from DB list gift.");
-
-            Gift? firstGift = firstUser!.UserGifts.FirstOrDefault<Gift>();
-            Assert.IsNotNull(firstGift, "Could not get gift from first user.");
-            User? expected = firstGift!.Receiver;
-            Assert.IsNotNull(expected, "Could not get user from first gift.");
-
-            Assert.AreEqual<string>(expected!.FirstName, actual.FirstName, "Users dont match.");
-        }
-
-        [TestMethod]
-        public void MyTestMethod()
-        {
-            using DbContext dbContext = new(ContextOptions);
-            dbContext.Database.Migrate();
-
-            Group? expected = dbContext.Groups.FirstOrDefault<Group>();
-            Group? actual = dbContext.Users.FirstOrDefault<User>()?.UserGroups.FirstOrDefault<Group>();
-
-            Assert.AreEqual<string>(expected.Name, actual?.Name);
-        }
+        #endregion
     }
 }
