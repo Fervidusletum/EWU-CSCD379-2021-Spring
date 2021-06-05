@@ -9,8 +9,8 @@ using SecretSanta.Data;
 namespace SecretSanta.Data.Migrations
 {
     [DbContext(typeof(DbContext))]
-    [Migration("20210604180924_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20210605070620_InitialCommit")]
+    partial class InitialCommit
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -20,13 +20,13 @@ namespace SecretSanta.Data.Migrations
 
             modelBuilder.Entity("GroupUser", b =>
                 {
-                    b.Property<int>("GroupsId")
+                    b.Property<int>("UserGroupsId")
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("UsersId")
                         .HasColumnType("INTEGER");
 
-                    b.HasKey("GroupsId", "UsersId");
+                    b.HasKey("UserGroupsId", "UsersId");
 
                     b.HasIndex("UsersId");
 
@@ -42,19 +42,19 @@ namespace SecretSanta.Data.Migrations
                     b.Property<int?>("GiverId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("GroupId")
+                    b.Property<int?>("ReceiverId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("ReceiverId")
+                    b.Property<int>("groupId")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
 
                     b.HasIndex("GiverId");
 
-                    b.HasIndex("GroupId");
-
                     b.HasIndex("ReceiverId");
+
+                    b.HasIndex("groupId");
 
                     b.ToTable("Assignments");
                 });
@@ -71,6 +71,9 @@ namespace SecretSanta.Data.Migrations
                     b.Property<int>("Priority")
                         .HasColumnType("INTEGER");
 
+                    b.Property<int>("ReceiverId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -78,10 +81,11 @@ namespace SecretSanta.Data.Migrations
                     b.Property<string>("Url")
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("INTEGER");
-
                     b.HasKey("Id");
+
+                    b.HasAlternateKey("Title");
+
+                    b.HasIndex("ReceiverId");
 
                     b.ToTable("Gifts");
                 });
@@ -97,6 +101,8 @@ namespace SecretSanta.Data.Migrations
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
+
+                    b.HasAlternateKey("Name");
 
                     b.ToTable("Groups");
                 });
@@ -117,6 +123,8 @@ namespace SecretSanta.Data.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasAlternateKey("FirstName", "LastName");
+
                     b.ToTable("Users");
                 });
 
@@ -124,7 +132,7 @@ namespace SecretSanta.Data.Migrations
                 {
                     b.HasOne("SecretSanta.Data.Group", null)
                         .WithMany()
-                        .HasForeignKey("GroupsId")
+                        .HasForeignKey("UserGroupsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -141,15 +149,30 @@ namespace SecretSanta.Data.Migrations
                         .WithMany()
                         .HasForeignKey("GiverId");
 
-                    b.HasOne("SecretSanta.Data.Group", null)
-                        .WithMany("Assignments")
-                        .HasForeignKey("GroupId");
-
                     b.HasOne("SecretSanta.Data.User", "Receiver")
                         .WithMany()
                         .HasForeignKey("ReceiverId");
 
+                    b.HasOne("SecretSanta.Data.Group", "group")
+                        .WithMany("Assignments")
+                        .HasForeignKey("groupId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Giver");
+
+                    b.Navigation("group");
+
+                    b.Navigation("Receiver");
+                });
+
+            modelBuilder.Entity("SecretSanta.Data.Gift", b =>
+                {
+                    b.HasOne("SecretSanta.Data.User", "Receiver")
+                        .WithMany("UserGifts")
+                        .HasForeignKey("ReceiverId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Receiver");
                 });
@@ -157,6 +180,11 @@ namespace SecretSanta.Data.Migrations
             modelBuilder.Entity("SecretSanta.Data.Group", b =>
                 {
                     b.Navigation("Assignments");
+                });
+
+            modelBuilder.Entity("SecretSanta.Data.User", b =>
+                {
+                    b.Navigation("UserGifts");
                 });
 #pragma warning restore 612, 618
         }

@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace SecretSanta.Data
 {
     public class Assignment
     {
         public int Id { get; set; }
+        public Group group { get; set; }
 
         public User Giver { get; private set; }
 
