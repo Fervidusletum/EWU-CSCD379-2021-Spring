@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Net;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.VisualBasic;
+using Serilog;
 using SecretSanta.Business;
 
 namespace SecretSanta.Api.Controllers
@@ -13,11 +13,13 @@ namespace SecretSanta.Api.Controllers
     {
         private IGroupRepository GroupRepository { get; }
         public IUserRepository UserRepository { get; }
+        private ILogger Logger { get; }
 
-        public GroupsController(IGroupRepository repository, IUserRepository userRepository)
+        public GroupsController(IGroupRepository repository, IUserRepository userRepository, ILogger logger)
         {
             GroupRepository = repository ?? throw new System.ArgumentNullException(nameof(repository));
             UserRepository = userRepository ?? throw new System.ArgumentNullException(nameof(userRepository));
+            Logger = logger?.ForContext<GroupsController>() ?? throw new System.ArgumentNullException(nameof(logger));
         }
 
         [HttpGet]
@@ -118,6 +120,7 @@ namespace SecretSanta.Api.Controllers
             AssignmentResult result = GroupRepository.GenerateAssignments(id);
             if (!result.IsSuccess)
             {
+                Logger.Information("Create Assignments failed with: {ErrorMessage}", result.ErrorMessage);
                 return BadRequest(result.ErrorMessage);
             }
             return Ok();

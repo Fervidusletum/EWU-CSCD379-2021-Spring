@@ -15,6 +15,9 @@ namespace SecretSanta.Data.Tests
     public class DbContextTests : IDisposable
     {
         #region In-Memory Testing Setup
+        // adapted from from https://docs.microsoft.com/en-us/ef/core/testing/sqlite#using-sqlite-in-memory-databases
+        // and https://docs.microsoft.com/en-us/ef/core/testing/testing-sample#the-tests
+        // and https://github.com/dotnet/EntityFramework.Docs/blob/main/samples/core/Miscellaneous/Testing/ItemsWebApi/ItemsWebApi/ItemsContext.cs
 
         private DbConnection Connection { get; }
         protected DbContextOptions<DbContext> ContextOptions { get; }
@@ -39,6 +42,7 @@ namespace SecretSanta.Data.Tests
 
         public void Dispose() => Connection.Dispose();
 
+        // since this is an in-memory db, it should be fine to repeatedly delete and repopulate it for each test
         async private Task Seed(DbContext dbContext)
         {
             dbContext.Database.EnsureDeleted();

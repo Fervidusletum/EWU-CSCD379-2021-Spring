@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Net;
 using Microsoft.AspNetCore.Mvc;
+using Serilog;
 using SecretSanta.Business;
 
 namespace SecretSanta.Api.Controllers
@@ -11,10 +12,12 @@ namespace SecretSanta.Api.Controllers
     public class UsersController : ControllerBase
     {
         private IUserRepository Repository { get; }
+        private ILogger Logger { get; }
 
-        public UsersController(IUserRepository repository)
+        public UsersController(IUserRepository repository, ILogger logger)
         {
             Repository = repository ?? throw new System.ArgumentNullException(nameof(repository));
+            Logger = logger?.ForContext<UsersController>() ?? throw new System.ArgumentNullException(nameof(logger));
         }
 
         [HttpGet]
@@ -66,6 +69,8 @@ namespace SecretSanta.Api.Controllers
                 Repository.Save(foundUser);
                 return Ok();
             }
+
+            Logger.Information("Put: Could not find Id {Id} for {UserFN} {UserLN}", id, user?.FirstName ?? "NULL USER DTO", user?.LastName ?? "");
             return NotFound();
         }
     }
