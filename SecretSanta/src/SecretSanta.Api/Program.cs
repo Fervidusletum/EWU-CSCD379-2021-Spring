@@ -12,24 +12,23 @@ namespace SecretSanta.Api
     {
         public static ILoggerFactory LoggerFactory { get; set; }
         private static Serilog.ILogger Logger { get; set; }
+        private static string Template { get; } = "[{Timestamp} {Level:u4}] ({SourceContext}) {Message:lj}{NewLine}{Exception}";
 
         public static void Main(string[] args)
         {
             // adapted from https://nblumhardt.com/2019/10/serilog-in-aspnetcore-3/
 
-            string template = "{Timestamp} [{Level:u4}] ({Application}: {SourceContext}) {Message:lj}{NewLine}{Exception}";
             Log.Logger = new LoggerConfiguration()
                 .Enrich.FromLogContext()
-                .Enrich.WithProperty("Application", "API")
                 .MinimumLevel.Debug()
                 .WriteTo.Console(
-                    outputTemplate: template,
+                    outputTemplate: Template,
                     theme: AnsiConsoleTheme.Code)
                 .WriteTo.File(
                     "log.txt",
                     restrictedToMinimumLevel: LogEventLevel.Information,
-                    outputTemplate: template)
-                .CreateLogger();
+                    outputTemplate: Template)
+                .CreateBootstrapLogger();
 
             Logger = Log.Logger.ForContext<Program>();
 
@@ -50,7 +49,19 @@ namespace SecretSanta.Api
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-                .UseSerilog()
+                .UseSerilog((context, services, configuration) => configuration
+                    .ReadFrom.Configuration(context.Configuration)
+                    .ReadFrom.Services(services)
+                    .MinimumLevel.Debug()
+                    .Enrich.FromLogContext()
+                    .WriteTo.Console(
+                        outputTemplate: Template,
+                        theme: AnsiConsoleTheme.Code)
+                    .WriteTo.File(
+                        "log.txt",
+                        restrictedToMinimumLevel: LogEventLevel.Information,
+                        outputTemplate: Template)
+                )
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();

@@ -4,21 +4,66 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using Serilog;
+using Serilog.Extensions.Logging;
+using Serilog.Extensions.Hosting;
+using Serilog.Sinks.SystemConsole.Themes;
 using DbContext = SecretSanta.Data.DbContext;
+using Serilog.Events;
 
 namespace SecretSanta.Data
 {
-    public class DbContext : Microsoft.EntityFrameworkCore.DbContext
+    public class DbContext : Microsoft.EntityFrameworkCore.DbContext, IDisposable
     {
+        private static string Template { get; }
+            = "[{Timestamp} {Level:u4}] ({Category}: {SourceContext}) {Message:lj}{NewLine}{Exception}";
+
+        public static ILoggerFactory DbLoggerFactory { get; }
+            = LoggerFactory.Create(builder => {
+                Log.Logger = new LoggerConfiguration()
+                    .Enrich.FromLogContext()
+                    .Enrich.WithProperty("Category", "Database")
+                    .MinimumLevel.Information()
+                    .WriteTo.Console(
+                        restrictedToMinimumLevel: LogEventLevel.Warning,
+                        outputTemplate: Template,
+                        theme: AnsiConsoleTheme.Code)
+                    .WriteTo.File("db.log",
+                        //restrictedToMinimumLevel: LogEventLevel.Information,
+                        outputTemplate: Template)
+                    .CreateLogger();
+
+                builder.AddSerilog(logger: Log.Logger.ForContext<DbContext>());
+            });
+        private static Microsoft.Extensions.Logging.ILogger Logger { get; }
+            = DbContext.DbLoggerFactory.CreateLogger<DbContext>();
+
         public DbContext()
-            : base(new DbContextOptionsBuilder<DbContext>().UseSqlite("Data Source=main.db").Options)
+            : this(new DbContextOptionsBuilder<DbContext>().UseSqlite("Data Source=main.db").Options)
         {
-            Database.Migrate();
         }
 
         public DbContext(DbContextOptions<DbContext> options) : base(options)
         {
             Database.Migrate();
+
+            Log.Logger.ForContext<DbContext>().Information("Logger Created");
+        }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+            => optionsBuilder.UseLoggerFactory(DbLoggerFactory);
+
+        public override void Dispose()
+        {
+            Log.CloseAndFlush();
+            base.Dispose();
+        }
+
+        public override ValueTask DisposeAsync()
+        {
+            Log.CloseAndFlush();
+            return base.DisposeAsync();
         }
 
         public DbSet<Group> Groups => Set<Group>();

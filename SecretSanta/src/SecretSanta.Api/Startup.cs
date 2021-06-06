@@ -37,7 +37,7 @@ namespace SecretSanta.Api
             {
                 app.UseDeveloperExceptionPage();
             }
-
+            app.UseSerilogRequestLogging();
             app.UseOpenApi();
             app.UseSwaggerUi3();
 
