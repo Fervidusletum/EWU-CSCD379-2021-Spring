@@ -1,11 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using SecretSanta.Data;
+using System.Linq;
 
 namespace SecretSanta.Business
 {
     public class GroupRepository : IGroupRepository
     {
+        private DbContext Context { get; }
+
+        public GroupRepository(DbContext context)
+            => Context = context;
+
         public Group Create(Group item)
         {
             if (item is null)
@@ -19,16 +25,20 @@ namespace SecretSanta.Business
 
         public Group? GetItem(int id)
         {
+            /*
             if (MockData.Groups.TryGetValue(id, out Group? user))
             {
                 return user;
             }
             return null;
+            */
+            return Context.Groups.FirstOrDefault<Group>(g => g.Id == id);
         }
 
         public ICollection<Group> List()
         {
-            return MockData.Groups.Values;
+            //return MockData.Groups.Values;
+            return Context.Groups.ToList();
         }
 
         public bool Remove(int id)

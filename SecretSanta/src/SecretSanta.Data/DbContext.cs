@@ -4,17 +4,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Serilog;
+using Serilog.Events;
 using Serilog.Extensions.Logging;
 using Serilog.Extensions.Hosting;
 using Serilog.Sinks.SystemConsole.Themes;
 using DbContext = SecretSanta.Data.DbContext;
-using Serilog.Events;
 
 namespace SecretSanta.Data
 {
-    public class DbContext : Microsoft.EntityFrameworkCore.DbContext, IDisposable
+    public class DbContext : Microsoft.EntityFrameworkCore.DbContext
     {
         private static string Template { get; }
             = "[{Timestamp} {Level:u4}] ({Category}: {SourceContext}) {Message:lj}{NewLine}{Exception}";
@@ -36,18 +37,22 @@ namespace SecretSanta.Data
 
                 builder.AddSerilog(logger: Log.Logger.ForContext<DbContext>());
             });
+
         private static Microsoft.Extensions.Logging.ILogger Logger { get; }
             = DbContext.DbLoggerFactory.CreateLogger<DbContext>();
 
-        public DbContext()
-            : this(new DbContextOptionsBuilder<DbContext>().UseSqlite("Data Source=main.db").Options)
+        /*
+        public DbContext(IConfiguration config)
+            : this(new DbContextOptionsBuilder<DbContext>()
+                  .UseSqlite($"Data Source={config?.GetValue<string>("Config:DbName") ?? "main.db"}")
+                  .Options)
         {
         }
+        */
 
         public DbContext(DbContextOptions<DbContext> options) : base(options)
         {
             Database.Migrate();
-
             Log.Logger.ForContext<DbContext>().Information("Logger Created");
         }
 
