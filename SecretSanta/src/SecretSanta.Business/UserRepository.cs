@@ -18,7 +18,8 @@ namespace SecretSanta.Business
                 throw new System.ArgumentNullException(nameof(item));
             }
 
-            MockData.Users[item.Id] = item;
+            Context.Users.Add(item);
+            Context.SaveChanges();
             return item;
         }
 
@@ -34,7 +35,12 @@ namespace SecretSanta.Business
 
         public bool Remove(int id)
         {
-            return MockData.Users.Remove(id);
+            User? user = GetItem(id);
+            if (user is null) return false;
+
+            Context.Users.Remove(user);
+            Context.SaveChanges();
+            return true;
         }
 
         public void Save(User item)
@@ -44,7 +50,8 @@ namespace SecretSanta.Business
                 throw new System.ArgumentNullException(nameof(item));
             }
 
-            MockData.Users[item.Id] = item;
+            Context.Users.Update(item);
+            Context.SaveChanges();
         }
     }
 }

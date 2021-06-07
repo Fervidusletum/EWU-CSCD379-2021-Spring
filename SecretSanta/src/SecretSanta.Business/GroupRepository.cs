@@ -19,7 +19,8 @@ namespace SecretSanta.Business
                 throw new ArgumentNullException(nameof(item));
             }
 
-            MockData.Groups[item.Id] = item;
+            Context.Groups.Add(item);
+            Context.SaveChanges();
             return item;
         }
 
@@ -35,7 +36,12 @@ namespace SecretSanta.Business
 
         public bool Remove(int id)
         {
-            return MockData.Groups.Remove(id);
+            Group? group = GetItem(id);
+            if (group is null) return false;
+
+            Context.Groups.Remove(group);
+            Context.SaveChanges();
+            return true;
         }
 
         public void Save(Group item)
@@ -45,15 +51,14 @@ namespace SecretSanta.Business
                 throw new ArgumentNullException(nameof(item));
             }
 
-            MockData.Groups[item.Id] = item;
+            Context.Groups.Update(item);
+            Context.SaveChanges();
         }
 
         public AssignmentResult GenerateAssignments(int groupId)
         {
-            if (!MockData.Groups.TryGetValue(groupId, out Group? group))
-            {
-                return AssignmentResult.Error("Group not found");
-            }
+            Group? group = GetItem(groupId);
+            if (group is null) return AssignmentResult.Error("Group not found");
 
             Random random = new();
             var groupUsers = new List<User>(group.Users);
@@ -79,6 +84,8 @@ namespace SecretSanta.Business
                 int endIndex = (i + 1) % users.Count;
                 group.Assignments.Add(new Assignment(users[i], users[endIndex]));
             }
+
+            Save(group);
             return AssignmentResult.Success();
         }
     }

@@ -1,15 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
 
 namespace SecretSanta.Data
 {
+    [Index(nameof(AssignmentGroupId), nameof(GiverId), nameof(ReceiverId))]
     public class Assignment
     {
         public int Id { get; set; }
-        public Group group { get; set; }
-
+        public int AssignmentGroupId { get; set; }
+        public Group AssignmentGroup { get; set; }
+        public int GiverId { get; set; }
         public User Giver { get; private set; }
-
+        public int ReceiverId { get; set; }
         public User Receiver { get; private set; }
 
         // making EF happy
