@@ -19,6 +19,43 @@ namespace SecretSanta.Data.Tests
         // and https://docs.microsoft.com/en-us/ef/core/testing/testing-sample#the-tests
         // and https://github.com/dotnet/EntityFramework.Docs/blob/main/samples/core/Miscellaneous/Testing/ItemsWebApi/ItemsWebApi/ItemsContext.cs
 
+
+        /*
+        logging setup, if desired for testing
+        mimic DI dbcontext from api startup
+
+        private static string Template { get; }
+            = "[{Timestamp} {Level:u4}] ({Category}: {SourceContext}) {Message:lj}{NewLine}{Exception}";
+
+        public static ILoggerFactory DbLoggerFactory { get; }
+            = LoggerFactory.Create(builder => {
+                Log.Logger = new LoggerConfiguration()
+                    .Enrich.FromLogContext()
+                    .Enrich.WithProperty("Category", "Database")
+                    .MinimumLevel.Information()
+                    .WriteTo.Console(
+                        restrictedToMinimumLevel: LogEventLevel.Warning,
+                        outputTemplate: Template,
+                        theme: AnsiConsoleTheme.Code)
+                    .WriteTo.File("db.log",
+                        //restrictedToMinimumLevel: LogEventLevel.Information,
+                        outputTemplate: Template)
+                    .CreateLogger();
+
+                builder.AddSerilog(logger: Log.Logger.ForContext<DbContext>());
+            });
+
+        private static Microsoft.Extensions.Logging.ILogger Logger { get; }
+            = DbContext.DbLoggerFactory.CreateLogger<DbContext>();
+
+        public DbContext(IConfiguration config)
+            : this(new DbContextOptionsBuilder<DbContext>()
+                  .UseSqlite($"Data Source={config?.GetValue<string>("Config:DbName") ?? "main.db"}")
+                  .Options)
+        {
+        }
+        */
+
         private DbConnection Connection { get; }
         protected DbContextOptions<DbContext> ContextOptions { get; }
         protected string SeedStr { get; } = "TestSeed";
@@ -29,8 +66,6 @@ namespace SecretSanta.Data.Tests
                 .UseSqlite(CreateInMemoryDatabase())
                 .Options;
             Connection = RelationalOptionsExtension.Extract(ContextOptions).Connection;
-            //Seed(); // not sure why, but seeding from constructor isnt populating data correctly (this was before making it async with param)
-            // whereas it's demonstrated in the example at https://docs.microsoft.com/en-us/ef/core/testing/testing-sample#setting-up-and-seeding-the-database
         }
 
         private static DbConnection CreateInMemoryDatabase()
@@ -42,9 +77,9 @@ namespace SecretSanta.Data.Tests
 
         public void Dispose() => Connection.Dispose();
 
-        // since this is an in-memory db, it should be fine to repeatedly delete and repopulate it for each test
         async private Task Seed(DbContext dbContext)
         {
+            // since this is an in-memory db, it should be fine to repeatedly delete and repopulate it for each test
             dbContext.Database.EnsureDeleted();
             dbContext.Database.Migrate();
 

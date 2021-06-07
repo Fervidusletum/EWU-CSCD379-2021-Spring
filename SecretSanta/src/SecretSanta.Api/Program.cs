@@ -77,10 +77,12 @@ namespace SecretSanta.Api
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
+                // part 2 of 2 stage init, completely overwrites stage1
                 .UseSerilog((context, services, configuration) => configuration
                     .ReadFrom.Configuration(context.Configuration)
                     .ReadFrom.Services(services)
                     .MinimumLevel.Debug()
+                    .Enrich.WithProperty("Category", "API")
                     .Enrich.FromLogContext()
                     .WriteTo.Console(
                         outputTemplate: Template,

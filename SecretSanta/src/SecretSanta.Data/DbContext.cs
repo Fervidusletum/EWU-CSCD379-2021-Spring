@@ -17,58 +17,10 @@ namespace SecretSanta.Data
 {
     public class DbContext : Microsoft.EntityFrameworkCore.DbContext
     {
-        private static string Template { get; }
-            = "[{Timestamp} {Level:u4}] ({Category}: {SourceContext}) {Message:lj}{NewLine}{Exception}";
-
-        public static ILoggerFactory DbLoggerFactory { get; }
-            = LoggerFactory.Create(builder => {
-                Log.Logger = new LoggerConfiguration()
-                    .Enrich.FromLogContext()
-                    .Enrich.WithProperty("Category", "Database")
-                    .MinimumLevel.Information()
-                    .WriteTo.Console(
-                        restrictedToMinimumLevel: LogEventLevel.Warning,
-                        outputTemplate: Template,
-                        theme: AnsiConsoleTheme.Code)
-                    .WriteTo.File("db.log",
-                        //restrictedToMinimumLevel: LogEventLevel.Information,
-                        outputTemplate: Template)
-                    .CreateLogger();
-
-                builder.AddSerilog(logger: Log.Logger.ForContext<DbContext>());
-            });
-
-        private static Microsoft.Extensions.Logging.ILogger Logger { get; }
-            = DbContext.DbLoggerFactory.CreateLogger<DbContext>();
-
-        /*
-        public DbContext(IConfiguration config)
-            : this(new DbContextOptionsBuilder<DbContext>()
-                  .UseSqlite($"Data Source={config?.GetValue<string>("Config:DbName") ?? "main.db"}")
-                  .Options)
-        {
-        }
-        */
 
         public DbContext(DbContextOptions<DbContext> options) : base(options)
         {
             Database.Migrate();
-            Log.Logger.ForContext<DbContext>().Information("Logger Created");
-        }
-
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-            => optionsBuilder.UseLoggerFactory(DbLoggerFactory);
-
-        public override void Dispose()
-        {
-            Log.CloseAndFlush();
-            base.Dispose();
-        }
-
-        public override ValueTask DisposeAsync()
-        {
-            Log.CloseAndFlush();
-            return base.DisposeAsync();
         }
 
         public DbSet<Group> Groups => Set<Group>();

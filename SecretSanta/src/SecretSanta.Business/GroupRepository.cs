@@ -25,19 +25,11 @@ namespace SecretSanta.Business
 
         public Group? GetItem(int id)
         {
-            /*
-            if (MockData.Groups.TryGetValue(id, out Group? user))
-            {
-                return user;
-            }
-            return null;
-            */
             return Context.Groups.FirstOrDefault<Group>(g => g.Id == id);
         }
 
         public ICollection<Group> List()
         {
-            //return MockData.Groups.Values;
             return Context.Groups.ToList();
         }
 

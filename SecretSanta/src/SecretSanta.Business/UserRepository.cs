@@ -24,19 +24,11 @@ namespace SecretSanta.Business
 
         public User? GetItem(int id)
         {
-            /*
-            if (MockData.Users.TryGetValue(id, out User? user))
-            {
-                return user;
-            }
-            return null;
-            */
             return Context.Users.FirstOrDefault<User>(u => u.Id == id);
         }
 
         public ICollection<User> List()
         {
-            //return MockData.Users.Values;
             return Context.Users.ToList();
         }
 

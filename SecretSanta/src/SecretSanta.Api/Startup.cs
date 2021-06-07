@@ -22,13 +22,14 @@ namespace SecretSanta.Api
         {
             services.AddSingleton<ILogger>(Log.Logger);
             services.AddDbContext<DbContext>( options =>
-                {
-                    string dbpath = Program.Configuration.GetValue<string>("DbPath") ?? "";
-                    string dbname = Program.Configuration.GetValue<string>("DbName") ?? "backup.db";
-                    //Log.Logger.ForContext<Startup>().Warning("DATABASE PATHNAME IS {dbpath}{dbname}", dbpath, dbname);
-                    options.UseSqlite($"Data Source={dbpath}{dbname}");
-                    //options.UseLoggerFactory();
-                });
+            {
+                string dbpath = Program.Configuration.GetValue<string>("DbPath") ?? "";
+                string dbname = Program.Configuration.GetValue<string>("DbName") ?? "main.db";
+                options.UseSqlite($"Data Source={dbpath}{dbname}");
+                options.UseLoggerFactory(Microsoft.Extensions.Logging.LoggerFactory.Create( builder => 
+                        builder.AddSerilog(Log.Logger.ForContext<DbContext>().ForContext("Category", "Database"))
+                ));
+            });
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IGroupRepository, GroupRepository>();
             services.AddControllers();
@@ -49,6 +50,7 @@ namespace SecretSanta.Api
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             /*
+            different method for setting up configuration
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
