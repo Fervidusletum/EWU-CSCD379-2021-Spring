@@ -13,20 +13,20 @@ namespace SecretSanta.Business.Tests
     {
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
-        public async Task Create_NullItem_ThrowsArgumentException()
+        public void Create_NullItem_ThrowsArgumentException()
         {
             using DbContext dbContext = new(ContextOptions);
-            await Init(dbContext);
+            Init(dbContext);
             GroupRepository sut = new(dbContext);
 
             sut.Create(null!);
         }
 
         [TestMethod]
-        public async Task Create_WithItem_CanGetItem()
+        public void Create_WithItem_CanGetItem()
         {
             using DbContext dbContext = new(ContextOptions);
-            await Init(dbContext);
+            Init(dbContext);
             GroupRepository sut = new(dbContext);
             Group group = new()
             {
@@ -41,10 +41,10 @@ namespace SecretSanta.Business.Tests
         }
 
         [TestMethod]
-        public async Task GetItem_WithBadId_ReturnsNull()
+        public void GetItem_WithBadId_ReturnsNull()
         {
             using DbContext dbContext = new(ContextOptions);
-            await Init(dbContext);
+            Init(dbContext);
             GroupRepository sut = new(dbContext);
 
             Group? user = sut.GetItem(-1);
@@ -53,10 +53,10 @@ namespace SecretSanta.Business.Tests
         }
 
         [TestMethod]
-        public async Task GetItem_WithValidId_ReturnsGroup()
+        public void GetItem_WithValidId_ReturnsGroup()
         {
             using DbContext dbContext = new(ContextOptions);
-            await Init(dbContext);
+            Init(dbContext);
             GroupRepository sut = new(dbContext);
             sut.Create(new() 
             { 
@@ -71,10 +71,10 @@ namespace SecretSanta.Business.Tests
         }
 
         [TestMethod]
-        public async Task List_WithGroups_ReturnsAllGroup()
+        public void List_WithGroups_ReturnsAllGroup()
         {
             using DbContext dbContext = new(ContextOptions);
-            await Init(dbContext);
+            Init(dbContext);
             GroupRepository sut = new(dbContext);
 
             int expected = dbContext.Groups.Count() + 1;
@@ -96,10 +96,10 @@ namespace SecretSanta.Business.Tests
         [TestMethod]
         [DataRow(-1, false)]
         [DataRow(42, true)]
-        public async Task Remove_WithInvalidId_ReturnsTrue(int id, bool expected)
+        public void Remove_WithInvalidId_ReturnsTrue(int id, bool expected)
         {
             using DbContext dbContext = new(ContextOptions);
-            await Init(dbContext);
+            Init(dbContext);
             GroupRepository sut = new(dbContext);
             sut.Create(new()
             {
@@ -112,20 +112,20 @@ namespace SecretSanta.Business.Tests
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
-        public async Task Save_NullItem_ThrowsArgumentException()
+        public void Save_NullItem_ThrowsArgumentException()
         {
             using DbContext dbContext = new(ContextOptions);
-            await Init(dbContext);
+            Init(dbContext);
             GroupRepository sut = new(dbContext);
 
             sut.Save(null!);
         }
 
         [TestMethod]
-        public async Task Save_WithValidItem_SavesItem()
+        public void Save_WithValidItem_SavesItem()
         {
             using DbContext dbContext = new(ContextOptions);
-            await Init(dbContext);
+            Init(dbContext);
             GroupRepository sut = new(dbContext);
 
             Group fake = new Group() { Id = 42, Name = "testgroup" };
@@ -138,10 +138,10 @@ namespace SecretSanta.Business.Tests
         }
 
         [TestMethod]
-        public async Task GenerateAssignments_WithInvalidId_ReturnsError()
+        public void GenerateAssignments_WithInvalidId_ReturnsError()
         {
             using DbContext dbContext = new(ContextOptions);
-            await Init(dbContext);
+            Init(dbContext);
             GroupRepository sut = new(dbContext);
 
             AssignmentResult result = sut.GenerateAssignments(42);
@@ -150,10 +150,10 @@ namespace SecretSanta.Business.Tests
         }
 
         [TestMethod]
-        public async Task GenerateAssignments_WithLessThanThreeUsers_ReturnsError()
+        public void GenerateAssignments_WithLessThanThreeUsers_ReturnsError()
         {
             using DbContext dbContext = new(ContextOptions);
-            await Init(dbContext);
+            Init(dbContext);
             GroupRepository sut = new(dbContext);
             sut.Create(new()
             {
@@ -167,10 +167,10 @@ namespace SecretSanta.Business.Tests
         }
 
         [TestMethod]
-        public async Task GenerateAssignments_WithValidGroup_CreatesAssignments()
+        public void GenerateAssignments_WithValidGroup_CreatesAssignments()
         {
             using DbContext dbContext = new(ContextOptions);
-            await Init(dbContext);
+            Init(dbContext);
             GroupRepository sut = new(dbContext);
             Group group = new()
             {

@@ -35,16 +35,16 @@ namespace SecretSanta.Data.Tests
 
         public void Dispose() => Connection.Dispose();
 
-        async protected Task Init(DbContext dbContext)
+        protected static void Init(DbContext dbContext)
         {
             // since this is an in-memory db, it should be fine to repeatedly delete and repopulate it for each test
             dbContext.Database.EnsureDeleted();
             dbContext.Database.Migrate();
         }
 
-        async protected Task Seed(DbContext dbContext)
+        protected async Task Seed(DbContext dbContext)
         {
-            await Init(dbContext);
+            Init(dbContext);
 
             List<User> users = new();
             for (int i = 0; i < 3; i++)

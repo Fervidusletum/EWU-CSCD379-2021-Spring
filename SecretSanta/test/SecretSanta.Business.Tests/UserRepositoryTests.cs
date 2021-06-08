@@ -16,20 +16,20 @@ namespace SecretSanta.Business.Tests
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
-        public async Task Create_NullItem_ThrowsArgumentException()
+        public void Create_NullItem_ThrowsArgumentException()
         {
             using DbContext dbContext = new(ContextOptions);
-            await Init(dbContext);
+            Init(dbContext);
             UserRepository sut = new(dbContext);
 
             sut.Create(null!);
         }
 
         [TestMethod]
-        public async Task Create_WithItem_CanGetItem()
+        public void Create_WithItem_CanGetItem()
         {
             using DbContext dbContext = new(ContextOptions);
-            await Init(dbContext);
+            Init(dbContext);
             UserRepository sut = new(dbContext);
             User user = new()
             {
@@ -43,10 +43,10 @@ namespace SecretSanta.Business.Tests
         }
 
         [TestMethod]
-        public async Task GetItem_WithBadId_ReturnsNull()
+        public void GetItem_WithBadId_ReturnsNull()
         {
             using DbContext dbContext = new(ContextOptions);
-            await Init(dbContext);
+            Init(dbContext);
             UserRepository sut = new(dbContext);
 
             User? user = sut.GetItem(-1);
@@ -55,10 +55,10 @@ namespace SecretSanta.Business.Tests
         }
 
         [TestMethod]
-        public async Task GetItem_WithValidId_ReturnsUser()
+        public void GetItem_WithValidId_ReturnsUser()
         {
             using DbContext dbContext = new(ContextOptions);
-            await Init(dbContext);
+            Init(dbContext);
             UserRepository sut = new(dbContext);
             sut.Create(new() 
             { 
@@ -75,10 +75,10 @@ namespace SecretSanta.Business.Tests
         }
 
         [TestMethod]
-        public async Task List_WithUsers_ReturnsAllUser()
+        public void List_WithUsers_ReturnsAllUser()
         {
             using DbContext dbContext = new(ContextOptions);
-            await Init(dbContext);
+            Init(dbContext);
             UserRepository sut = new(dbContext);
 
             int expected = dbContext.Users.Count() + 1;
@@ -101,10 +101,10 @@ namespace SecretSanta.Business.Tests
         [TestMethod]
         [DataRow(-1, false)]
         [DataRow(42, true)]
-        public async Task Remove_WithInvalidId_ReturnsTrue(int id, bool expected)
+        public void Remove_WithInvalidId_ReturnsTrue(int id, bool expected)
         {
             using DbContext dbContext = new(ContextOptions);
-            await Init(dbContext);
+            Init(dbContext);
             UserRepository sut = new(dbContext);
             sut.Create(new()
             {
@@ -118,20 +118,20 @@ namespace SecretSanta.Business.Tests
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
-        public async Task Save_NullItem_ThrowsArgumentException()
+        public void Save_NullItem_ThrowsArgumentException()
         {
             using DbContext dbContext = new(ContextOptions);
-            await Init(dbContext);
+            Init(dbContext);
             UserRepository sut = new(dbContext);
 
             sut.Save(null!);
         }
 
         [TestMethod]
-        public async Task Save_WithValidItem_SavesItem()
+        public void Save_WithValidItem_SavesItem()
         {
             using DbContext dbContext = new(ContextOptions);
-            await Init(dbContext);
+            Init(dbContext);
             UserRepository sut = new(dbContext);
 
             User fake = new User() { Id = 42, FirstName = "test", LastName = "user" };
