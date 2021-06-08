@@ -1,42 +1,51 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SecretSanta.Data;
+using SecretSanta.Data.Tests;
 
 namespace SecretSanta.Business.Tests
 {
     [TestClass]
-    public class GroupRepositoryTests
+    public class GroupRepositoryTests : TestableDbContext
     {
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
-        public void Create_NullItem_ThrowsArgumentException()
+        public async Task Create_NullItem_ThrowsArgumentException()
         {
-            GroupRepository sut = new();
+            using DbContext dbContext = new(ContextOptions);
+            await Init(dbContext);
+            GroupRepository sut = new(dbContext);
 
             sut.Create(null!);
         }
 
         [TestMethod]
-        public void Create_WithItem_CanGetItem()
+        public async Task Create_WithItem_CanGetItem()
         {
-            GroupRepository sut = new();
-            Group user = new()
+            using DbContext dbContext = new(ContextOptions);
+            await Init(dbContext);
+            GroupRepository sut = new(dbContext);
+            Group group = new()
             {
-                Id = 42
+                Id = 42,
+                Name = "testgroup"
             };
 
-            Group createdGroup = sut.Create(user);
+            Group createdGroup = sut.Create(group);
 
             Group? retrievedGroup = sut.GetItem(createdGroup.Id);
-            Assert.AreEqual(user, retrievedGroup);
+            Assert.AreEqual(group, retrievedGroup);
         }
 
         [TestMethod]
-        public void GetItem_WithBadId_ReturnsNull()
+        public async Task GetItem_WithBadId_ReturnsNull()
         {
-            GroupRepository sut = new();
+            using DbContext dbContext = new(ContextOptions);
+            await Init(dbContext);
+            GroupRepository sut = new(dbContext);
 
             Group? user = sut.GetItem(-1);
 
@@ -44,9 +53,11 @@ namespace SecretSanta.Business.Tests
         }
 
         [TestMethod]
-        public void GetItem_WithValidId_ReturnsGroup()
+        public async Task GetItem_WithValidId_ReturnsGroup()
         {
-            GroupRepository sut = new();
+            using DbContext dbContext = new(ContextOptions);
+            await Init(dbContext);
+            GroupRepository sut = new(dbContext);
             sut.Create(new() 
             { 
                 Id = 42,
@@ -60,9 +71,13 @@ namespace SecretSanta.Business.Tests
         }
 
         [TestMethod]
-        public void List_WithGroups_ReturnsAllGroup()
+        public async Task List_WithGroups_ReturnsAllGroup()
         {
-            GroupRepository sut = new();
+            using DbContext dbContext = new(ContextOptions);
+            await Init(dbContext);
+            GroupRepository sut = new(dbContext);
+
+            int expected = dbContext.Groups.Count() + 1;
             sut.Create(new()
             {
                 Id = 42,
@@ -71,8 +86,8 @@ namespace SecretSanta.Business.Tests
 
             ICollection<Group> users = sut.List();
 
-            Assert.AreEqual(SampleData.Groups.Count, users.Count);
-            foreach(var mockGroup in SampleData.Groups.Values)
+            Assert.AreEqual(expected, users.Count);
+            foreach(var mockGroup in dbContext.Groups)
             {
                 Assert.IsNotNull(users.SingleOrDefault(x => x.Name == mockGroup.Name));
             }
@@ -81,9 +96,11 @@ namespace SecretSanta.Business.Tests
         [TestMethod]
         [DataRow(-1, false)]
         [DataRow(42, true)]
-        public void Remove_WithInvalidId_ReturnsTrue(int id, bool expected)
+        public async Task Remove_WithInvalidId_ReturnsTrue(int id, bool expected)
         {
-            GroupRepository sut = new();
+            using DbContext dbContext = new(ContextOptions);
+            await Init(dbContext);
+            GroupRepository sut = new(dbContext);
             sut.Create(new()
             {
                 Id = 42,
@@ -95,27 +112,37 @@ namespace SecretSanta.Business.Tests
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
-        public void Save_NullItem_ThrowsArgumentException()
+        public async Task Save_NullItem_ThrowsArgumentException()
         {
-            GroupRepository sut = new();
+            using DbContext dbContext = new(ContextOptions);
+            await Init(dbContext);
+            GroupRepository sut = new(dbContext);
 
             sut.Save(null!);
         }
 
         [TestMethod]
-        public void Save_WithValidItem_SavesItem()
+        public async Task Save_WithValidItem_SavesItem()
         {
-            GroupRepository sut = new();
+            using DbContext dbContext = new(ContextOptions);
+            await Init(dbContext);
+            GroupRepository sut = new(dbContext);
 
-            sut.Save(new Group() { Id = 42 });
+            Group fake = new Group() { Id = 42, Name = "testgroup" };
+            sut.Create(fake);
 
-            Assert.AreEqual(42, sut.GetItem(42)?.Id);
+            string expected = "updatedname";
+            fake.Name = expected;
+
+            Assert.AreEqual(expected, sut.GetItem(42)?.Name);
         }
 
         [TestMethod]
-        public void GenerateAssignments_WithInvalidId_ReturnsError()
+        public async Task GenerateAssignments_WithInvalidId_ReturnsError()
         {
-            GroupRepository sut = new();
+            using DbContext dbContext = new(ContextOptions);
+            await Init(dbContext);
+            GroupRepository sut = new(dbContext);
 
             AssignmentResult result = sut.GenerateAssignments(42);
 
@@ -123,9 +150,11 @@ namespace SecretSanta.Business.Tests
         }
 
         [TestMethod]
-        public void GenerateAssignments_WithLessThanThreeUsers_ReturnsError()
+        public async Task GenerateAssignments_WithLessThanThreeUsers_ReturnsError()
         {
-            GroupRepository sut = new();
+            using DbContext dbContext = new(ContextOptions);
+            await Init(dbContext);
+            GroupRepository sut = new(dbContext);
             sut.Create(new()
             {
                 Id = 42,
@@ -138,25 +167,29 @@ namespace SecretSanta.Business.Tests
         }
 
         [TestMethod]
-        public void GenerateAssignments_WithValidGroup_CreatesAssignments()
+        public async Task GenerateAssignments_WithValidGroup_CreatesAssignments()
         {
-            GroupRepository sut = new();
-            Group group = sut.Create(new()
+            using DbContext dbContext = new(ContextOptions);
+            await Init(dbContext);
+            GroupRepository sut = new(dbContext);
+            Group group = new()
             {
                 Id = 42,
                 Name = "Group"
-            });
+            };
             group.Users.Add(new User { FirstName = "John", LastName = "Doe" });
             group.Users.Add(new User { FirstName = "Jane", LastName = "Smith" });
             group.Users.Add(new User { FirstName = "Bob", LastName = "Jones" });
+            sut.Create(group);
 
             AssignmentResult result = sut.GenerateAssignments(42);
+            Group actual = sut.GetItem(42)!;
 
             Assert.IsTrue(result.IsSuccess);
-            Assert.AreEqual(3, group.Assignments.Count);
-            Assert.AreEqual(3, group.Assignments.Select(x => x.Giver.FirstName).Distinct().Count());
-            Assert.AreEqual(3, group.Assignments.Select(x => x.Receiver.FirstName).Distinct().Count());
-            Assert.IsFalse(group.Assignments.Any(x => x.Giver.FirstName == x.Receiver.FirstName));
+            Assert.AreEqual(3, actual.Assignments.Count);
+            Assert.AreEqual(3, actual.Assignments.Select(x => x.Giver.FirstName).Distinct().Count());
+            Assert.AreEqual(3, actual.Assignments.Select(x => x.Receiver.FirstName).Distinct().Count());
+            Assert.IsFalse(actual.Assignments.Any(x => x.Giver.FirstName == x.Receiver.FirstName));
         }
     }
 }
