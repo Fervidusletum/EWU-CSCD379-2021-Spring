@@ -3,12 +3,16 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using SecretSanta.Data;
 using Serilog;
 using Serilog.Events;
 using Serilog.Sinks.SystemConsole.Themes;
+using DbContext = SecretSanta.Data.DbContext;
 
 namespace SecretSanta.Api
 {
@@ -20,19 +24,24 @@ namespace SecretSanta.Api
 
         public static void Main(string[] args)
         {
-            string execDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? "";
+            //string execDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? "";
             Dictionary<string, string> defaultEnvironmentVariables = new()
             {
                 { "Config:DbName", "main.db" },
                 { "Config:DbPath", @"..\SecretSanta.Data\" }, // set to assembly folder?
                 { "Config:LogName", "db.log" },
-                { "Config:LogPath", execDir }
+                { "Config:LogPath", @"..\SecretSanta.Data\" },
+                { "Config:ClearAndSeed", bool.FalseString }
             };
 
             var builder = new ConfigurationBuilder()
                 .AddInMemoryCollection(defaultEnvironmentVariables)
                 .AddEnvironmentVariables()
-                .AddCommandLine(args);
+                .AddCommandLine(args,new Dictionary<string, string> {
+                    { "--ClearAndSeed", "Config:ClearAndSeed" },
+                    { "--DbName", "Config:DbName" },
+                    { "--DbPath", "Config:DbPath" }
+                });
 
             IConfigurationRoot config = builder.Build();
             Configuration = config.GetSection("Config");
@@ -43,7 +52,7 @@ namespace SecretSanta.Api
             Log.Logger = new LoggerConfiguration()
                 .Enrich.FromLogContext()
                 .Enrich.WithProperty("Category", "API")
-                .MinimumLevel.Debug()
+                .MinimumLevel.Information()
                 .WriteTo.Console(
                     outputTemplate: Template,
                     theme: AnsiConsoleTheme.Code)
@@ -55,6 +64,11 @@ namespace SecretSanta.Api
 
             Logger = Log.Logger.ForContext<Program>();
 
+            foreach (string arg in args)
+            {
+                Logger.Information("Arg found: {Arg}", arg);
+            }
+
             foreach (IConfigurationSection evar in Configuration.GetChildren())
             {
                 Logger.Information("Env Var {EVKey} is {EVVal}", evar.Key ?? "NULL", evar.Value ?? "NULL");
@@ -63,7 +77,10 @@ namespace SecretSanta.Api
             try
             {
                 Logger.Information("Startup");
-                CreateHostBuilder(args).Build().Run();
+                CreateHostBuilder(args)
+                    .Build()
+                    .MigrateDatabase(Convert.ToBoolean(Configuration.GetValue<string>("ClearAndSeed")))
+                    .Run();
             }
             catch (Exception ex)
             {
@@ -81,7 +98,7 @@ namespace SecretSanta.Api
                 .UseSerilog((context, services, configuration) => configuration
                     .ReadFrom.Configuration(context.Configuration)
                     .ReadFrom.Services(services)
-                    .MinimumLevel.Debug()
+                    .MinimumLevel.Information()
                     .Enrich.WithProperty("Category", "API")
                     .Enrich.FromLogContext()
                     .WriteTo.Console(

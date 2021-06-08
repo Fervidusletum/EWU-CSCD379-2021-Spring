@@ -17,7 +17,6 @@ namespace SecretSanta.Data.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Groups", x => x.Id);
-                    table.UniqueConstraint("AK_Groups_Name", x => x.Name);
                 });
 
             migrationBuilder.CreateTable(
@@ -32,7 +31,6 @@ namespace SecretSanta.Data.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Users", x => x.Id);
-                    table.UniqueConstraint("AK_Users_FirstName_LastName", x => new { x.FirstName, x.LastName });
                 });
 
             migrationBuilder.CreateTable(
@@ -41,16 +39,16 @@ namespace SecretSanta.Data.Migrations
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    groupId = table.Column<int>(type: "INTEGER", nullable: false),
-                    GiverId = table.Column<int>(type: "INTEGER", nullable: true),
-                    ReceiverId = table.Column<int>(type: "INTEGER", nullable: true)
+                    GroupId = table.Column<int>(type: "INTEGER", nullable: false),
+                    GiverId = table.Column<int>(type: "INTEGER", nullable: false),
+                    ReceiverId = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Assignments", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Assignments_Groups_groupId",
-                        column: x => x.groupId,
+                        name: "FK_Assignments_Groups_GroupId",
+                        column: x => x.GroupId,
                         principalTable: "Groups",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -59,13 +57,13 @@ namespace SecretSanta.Data.Migrations
                         column: x => x.GiverId,
                         principalTable: "Users",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Assignments_Users_ReceiverId",
                         column: x => x.ReceiverId,
                         principalTable: "Users",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -83,7 +81,6 @@ namespace SecretSanta.Data.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Gifts", x => x.Id);
-                    table.UniqueConstraint("AK_Gifts_Title", x => x.Title);
                     table.ForeignKey(
                         name: "FK_Gifts_Users_ReceiverId",
                         column: x => x.ReceiverId,
@@ -96,15 +93,15 @@ namespace SecretSanta.Data.Migrations
                 name: "GroupUser",
                 columns: table => new
                 {
-                    UserGroupsId = table.Column<int>(type: "INTEGER", nullable: false),
+                    GroupsId = table.Column<int>(type: "INTEGER", nullable: false),
                     UsersId = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_GroupUser", x => new { x.UserGroupsId, x.UsersId });
+                    table.PrimaryKey("PK_GroupUser", x => new { x.GroupsId, x.UsersId });
                     table.ForeignKey(
-                        name: "FK_GroupUser_Groups_UserGroupsId",
-                        column: x => x.UserGroupsId,
+                        name: "FK_GroupUser_Groups_GroupsId",
+                        column: x => x.GroupsId,
                         principalTable: "Groups",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -122,9 +119,9 @@ namespace SecretSanta.Data.Migrations
                 column: "GiverId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Assignments_groupId",
+                name: "IX_Assignments_GroupId_GiverId_ReceiverId",
                 table: "Assignments",
-                column: "groupId");
+                columns: new[] { "GroupId", "GiverId", "ReceiverId" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Assignments_ReceiverId",
@@ -137,9 +134,25 @@ namespace SecretSanta.Data.Migrations
                 column: "ReceiverId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Gifts_Title_ReceiverId",
+                table: "Gifts",
+                columns: new[] { "Title", "ReceiverId" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Groups_Name",
+                table: "Groups",
+                column: "Name",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_GroupUser_UsersId",
                 table: "GroupUser",
                 column: "UsersId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_FirstName_LastName",
+                table: "Users",
+                columns: new[] { "FirstName", "LastName" });
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

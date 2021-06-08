@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using SecretSanta.Data;
 using System.Linq;
+using System;
 
 namespace SecretSanta.Business
 {
@@ -9,7 +10,7 @@ namespace SecretSanta.Business
         private DbContext Context { get; }
 
         public UserRepository(DbContext context)
-            => Context = context;
+            => Context = context ?? throw new ArgumentNullException(nameof(context));
 
         public User Create(User item)
         {

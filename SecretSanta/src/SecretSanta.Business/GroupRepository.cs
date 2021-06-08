@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using SecretSanta.Data;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SecretSanta.Business
 {
@@ -10,7 +11,7 @@ namespace SecretSanta.Business
         private DbContext Context { get; }
 
         public GroupRepository(DbContext context)
-            => Context = context;
+            => Context = context ?? throw new ArgumentNullException(nameof(context));
 
         public Group Create(Group item)
         {
@@ -26,7 +27,22 @@ namespace SecretSanta.Business
 
         public Group? GetItem(int id)
         {
-            return Context.Groups.FirstOrDefault<Group>(g => g.Id == id);
+            //Group? g = Context.Groups.FirstOrDefault<Group>(g => g.Id == id);
+            Group? g = Context.Groups.Find(id);
+
+            Console.WriteLine($"REPO: NUMBER OF USERS IS {g.Users.Count()}");
+            Console.WriteLine($"REPO: NUMBER OF ASSIGNMENTS IS {g.Assignments.Count()}");
+            return g;
+        }
+
+        public async Task<Group?> GetItemAsync(int id)
+        {
+            //Group? g = Context.Groups.FirstOrDefault<Group>(g => g.Id == id);
+            Group? g = await Context.Groups.FindAsync(id);
+
+            Console.WriteLine($"REPO: NUMBER OF USERS IS {g.Users.Count()}");
+            Console.WriteLine($"REPO: NUMBER OF ASSIGNMENTS IS {g.Assignments.Count()}");
+            return g;
         }
 
         public ICollection<Group> List()
@@ -82,7 +98,7 @@ namespace SecretSanta.Business
             for(int i = 0; i < users.Count; i++)
             {
                 int endIndex = (i + 1) % users.Count;
-                group.Assignments.Add(new Assignment(users[i], users[endIndex]));
+                group.Assignments.Add(new() { Giver = users[i], Receiver = users[endIndex] });
             }
 
             Save(group);

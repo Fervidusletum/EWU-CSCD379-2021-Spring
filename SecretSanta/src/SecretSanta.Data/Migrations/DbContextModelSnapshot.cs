@@ -36,10 +36,10 @@ namespace SecretSanta.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("AssignmentGroupId")
+                    b.Property<int>("GiverId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("GiverId")
+                    b.Property<int>("GroupId")
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("ReceiverId")
@@ -51,7 +51,7 @@ namespace SecretSanta.Data.Migrations
 
                     b.HasIndex("ReceiverId");
 
-                    b.HasIndex("AssignmentGroupId", "GiverId", "ReceiverId");
+                    b.HasIndex("GroupId", "GiverId", "ReceiverId");
 
                     b.ToTable("Assignments");
                 });
@@ -143,15 +143,15 @@ namespace SecretSanta.Data.Migrations
 
             modelBuilder.Entity("SecretSanta.Data.Assignment", b =>
                 {
-                    b.HasOne("SecretSanta.Data.Group", "AssignmentGroup")
-                        .WithMany("Assignments")
-                        .HasForeignKey("AssignmentGroupId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("SecretSanta.Data.User", "Giver")
                         .WithMany()
                         .HasForeignKey("GiverId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SecretSanta.Data.Group", "Group")
+                        .WithMany("Assignments")
+                        .HasForeignKey("GroupId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -161,9 +161,9 @@ namespace SecretSanta.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("AssignmentGroup");
-
                     b.Navigation("Giver");
+
+                    b.Navigation("Group");
 
                     b.Navigation("Receiver");
                 });

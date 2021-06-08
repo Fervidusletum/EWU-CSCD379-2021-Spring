@@ -74,8 +74,8 @@ namespace SecretSanta.Business.Tests
 
             ICollection<User> users = sut.List();
 
-            Assert.AreEqual(MockData.Users.Count, users.Count);
-            foreach(var mockUser in MockData.Users.Values)
+            Assert.AreEqual(SampleData.Users.Count, users.Count);
+            foreach(var mockUser in SampleData.Users.Values)
             {
                 Assert.IsNotNull(users.SingleOrDefault(x => x.FirstName == mockUser.FirstName && x.LastName == mockUser.LastName));
             }

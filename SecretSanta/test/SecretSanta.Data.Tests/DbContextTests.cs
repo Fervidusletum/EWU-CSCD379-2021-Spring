@@ -102,9 +102,9 @@ namespace SecretSanta.Data.Tests
             Group testGroup = new Group { Name = $"{SeedStr}Group" };
             testGroup.Users.AddRange(users);
 
-            testGroup.Assignments.Add(new Assignment(users[0], users[1]));
-            testGroup.Assignments.Add(new Assignment(users[1], users[2]));
-            testGroup.Assignments.Add(new Assignment(users[2], users[0]));
+            testGroup.Assignments.Add(new Assignment { Giver = users[0], Receiver = users[1] });
+            testGroup.Assignments.Add(new Assignment { Giver = users[1], Receiver = users[2] });
+            testGroup.Assignments.Add(new Assignment { Giver = users[2], Receiver = users[0] });
 
             dbContext.Groups.Add(testGroup);
             await dbContext.SaveChangesAsync();
@@ -164,6 +164,17 @@ namespace SecretSanta.Data.Tests
             Assert.AreEqual<string>(expected.FirstName, actual!.FirstName);
         }
 
+        [TestMethod]
+        async public Task User_FromGroup_IsNotNull()
+        {
+            using DbContext dbContext = new(ContextOptions);
+            await Seed(dbContext);
+
+            User? actual = dbContext.Groups.First<Group>().Users.First<User>();
+
+            Assert.IsNotNull(actual);
+        }
+
 
         [TestMethod]
         async public Task Group_AutoPopulatedInUser_MatchesFromUser()
@@ -178,6 +189,18 @@ namespace SecretSanta.Data.Tests
             Assert.AreEqual<string>(expected.Name, actual!.Name);
         }
 
+        [TestMethod]
+        public async Task Group_AutoPopulatedContents_NotEmpty()
+        {
+            using DbContext dbContext = new(ContextOptions);
+            await Seed(dbContext);
+
+            Group sut = dbContext.Groups.First<Group>();
+
+            Assert.AreNotEqual<int>(0, sut.Users?.Count ?? 0, $"No Users in Group {sut.Name}");
+            Assert.AreNotEqual<int>(0, sut.Assignments?.Count ?? 0, $"No Assignments in Group {sut.Name}");
+        }
+
         #endregion
 
         #region DB Manipulation Tests
@@ -186,6 +209,8 @@ namespace SecretSanta.Data.Tests
         async public Task DbContext_AddingUser_CountIncrementsByOne()
         {
             using DbContext dbContext = new(ContextOptions);
+            await Seed(dbContext);
+
             string fn = Guid.NewGuid().ToString();
             string ln = nameof(DbContextTests) + nameof(DbContext_AddingUser_CountIncrementsByOne);
 
@@ -216,6 +241,8 @@ namespace SecretSanta.Data.Tests
         async public Task DbContext_RemovingUser_CountDecrementsByOne()
         {
             using DbContext dbContext = new(ContextOptions);
+            await Seed(dbContext);
+
             string fn = Guid.NewGuid().ToString();
             string ln = nameof(DbContextTests) + nameof(DbContext_AddingUser_CountIncrementsByOne);
 
