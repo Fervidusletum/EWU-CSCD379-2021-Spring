@@ -25,7 +25,6 @@ namespace SecretSanta.Data
 
         public DbContext(DbContextOptions<DbContext> options) : base(options)
         {
-            //Database.Migrate();
         }
 
         public DbSet<Group> Groups => Set<Group>();
@@ -38,7 +37,6 @@ namespace SecretSanta.Data
         {
             if (modelBuilder is null) throw new ArgumentNullException(nameof(modelBuilder));
 
-            //modelBuilder.Entity<Group>().HasIndex(g => g.Name).IsUnique();
             modelBuilder.Entity<Group>()
                 .HasMany(g => g.Users)
                 .WithMany(u => u.Groups);
@@ -46,21 +44,9 @@ namespace SecretSanta.Data
                 .HasMany(g => g.Assignments)
                 .WithOne(a => a.Group);
 
-            //modelBuilder.Entity<User>().HasIndex(u => new { u.FirstName, u.LastName });
             modelBuilder.Entity<User>()
                 .HasMany(u => u.Gifts)
                 .WithOne(g => g.Receiver);
-
-            //modelBuilder.Entity<Gift>().HasIndex(g => new { g.Title, g.ReceiverId });
-
-            //modelBuilder.Entity<Assignment>().HasIndex(a => new { a.AssignmentGroupId, a.GiverId, a.ReceiverId });
-
-            /*
-            modelBuilder.Entity<Group>()
-                .HasData(SampleData.SeedGroups());
-            modelBuilder.Entity<User>()
-                .HasData(SampleData.SeedUsers());
-            */
         }
     }
 }

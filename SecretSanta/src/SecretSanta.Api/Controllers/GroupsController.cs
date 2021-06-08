@@ -29,38 +29,12 @@ namespace SecretSanta.Api.Controllers
             return GroupRepository.List().Select(x => Dto.Group.ToDto(x)!);
         }
 
-        /*
         [HttpGet("{id}")]
         public ActionResult<Dto.Group?> Get(int id)
         {
             Dto.Group? group = Dto.Group.ToDto(GroupRepository.GetItem(id), true);
             if (group is null) return NotFound();
-            Logger.Warning("RETURNING GROUP {Group}", group.Name);
-            foreach(Dto.User u in group.Users)
-            {
-                Logger.Warning("FOUND USER {FN} {LN}", u.FirstName, u.LastName);
-            }
-            foreach (Dto.Assignment a in group.Assignments)
-            {
-                Logger.Warning("FOUND ASSIGNMENT {GFN} {GLN} => {RFN} {RLN}", a.Giver.FirstName, a.Giver.LastName, a.Receiver.FirstName, a.Receiver.LastName);
-            }
-            return group;
-        }
-        */
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Dto.Group?>> Get(int id)
-        {
-            Dto.Group? group = Dto.Group.ToDto(await GroupRepository.GetItemAsync(id), true);
-            if (group is null) return NotFound();
-            Logger.Warning("RETURNING GROUP {Group}", group.Name);
-            foreach (Dto.User u in group.Users)
-            {
-                Logger.Warning("FOUND USER {FN} {LN}", u.FirstName, u.LastName);
-            }
-            foreach (Dto.Assignment a in group.Assignments)
-            {
-                Logger.Warning("FOUND ASSIGNMENT {GFN} {GLN} => {RFN} {RLN}", a.Giver.FirstName, a.Giver.LastName, a.Receiver.FirstName, a.Receiver.LastName);
-            }
+
             return group;
         }
 

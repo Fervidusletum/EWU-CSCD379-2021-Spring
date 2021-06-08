@@ -12,13 +12,13 @@ using SecretSanta.Data;
 using Serilog;
 using Serilog.Events;
 using Serilog.Sinks.SystemConsole.Themes;
+using System.Linq;
 using DbContext = SecretSanta.Data.DbContext;
 
 namespace SecretSanta.Api
 {
     public class Program
     {
-        private static Serilog.ILogger Logger { get; set; }
         private static string Template { get; } = "[{Timestamp} {Level:u4}] ({Category}: {SourceContext}) {Message:lj}{NewLine}{Exception}";
         public static IConfiguration Configuration { get; private set; }
 
@@ -31,14 +31,13 @@ namespace SecretSanta.Api
                 { "Config:DbPath", @"..\SecretSanta.Data\" }, // set to assembly folder?
                 { "Config:LogName", "db.log" },
                 { "Config:LogPath", @"..\SecretSanta.Data\" },
-                { "Config:ClearAndSeed", bool.FalseString }
+                { "Config:DeploySampleData", args.Any(arg => arg.Contains("DeploySampleData")) ? bool.TrueString : bool.FalseString }
             };
 
             var builder = new ConfigurationBuilder()
                 .AddInMemoryCollection(defaultEnvironmentVariables)
                 .AddEnvironmentVariables()
                 .AddCommandLine(args,new Dictionary<string, string> {
-                    { "--ClearAndSeed", "Config:ClearAndSeed" },
                     { "--DbName", "Config:DbName" },
                     { "--DbPath", "Config:DbPath" }
                 });
@@ -62,7 +61,7 @@ namespace SecretSanta.Api
                     outputTemplate: Template)
                 .CreateBootstrapLogger();
 
-            Logger = Log.Logger.ForContext<Program>();
+            Serilog.ILogger Logger = Log.Logger.ForContext<Program>().ForContext("Category", "Startup");
 
             foreach (string arg in args)
             {
@@ -76,15 +75,15 @@ namespace SecretSanta.Api
 
             try
             {
-                Logger.Information("Startup");
+                Logger.Information("Building host");
                 CreateHostBuilder(args)
                     .Build()
-                    .MigrateDatabase(Convert.ToBoolean(Configuration.GetValue<string>("ClearAndSeed")))
+                    .MigrateDatabase(Convert.ToBoolean(Configuration.GetValue<string>("DeploySampleData")))
                     .Run();
             }
             catch (Exception ex)
             {
-                Logger.Fatal(ex, "Startup Failed");
+                Logger.Fatal(ex, "Host build Failed");
             }
             finally
             {

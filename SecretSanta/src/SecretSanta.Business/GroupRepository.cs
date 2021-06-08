@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using SecretSanta.Data;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using DbContext = SecretSanta.Data.DbContext;
 
 namespace SecretSanta.Business
 {
@@ -25,30 +27,16 @@ namespace SecretSanta.Business
             return item;
         }
 
+        // https://docs.microsoft.com/en-us/ef/core/querying/related-data/eager#eager-loading
         public Group? GetItem(int id)
-        {
-            //Group? g = Context.Groups.FirstOrDefault<Group>(g => g.Id == id);
-            Group? g = Context.Groups.Find(id);
-
-            Console.WriteLine($"REPO: NUMBER OF USERS IS {g.Users.Count()}");
-            Console.WriteLine($"REPO: NUMBER OF ASSIGNMENTS IS {g.Assignments.Count()}");
-            return g;
-        }
-
-        public async Task<Group?> GetItemAsync(int id)
-        {
-            //Group? g = Context.Groups.FirstOrDefault<Group>(g => g.Id == id);
-            Group? g = await Context.Groups.FindAsync(id);
-
-            Console.WriteLine($"REPO: NUMBER OF USERS IS {g.Users.Count()}");
-            Console.WriteLine($"REPO: NUMBER OF ASSIGNMENTS IS {g.Assignments.Count()}");
-            return g;
-        }
+            => List().FirstOrDefault<Group>(g => g.Id == id);
 
         public ICollection<Group> List()
-        {
-            return Context.Groups.ToList();
-        }
+            => Context.Groups
+                .Include(group => group.Users)
+                .ThenInclude(user => user.Gifts)
+                .Include(group => group.Assignments)
+                .ToList();
 
         public bool Remove(int id)
         {

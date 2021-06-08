@@ -8,7 +8,6 @@ namespace SecretSanta.Business
     {
         ICollection<Group> List();
         Group? GetItem(int id);
-        Task<Group?> GetItemAsync(int id);
         bool Remove(int id);
         Group Create(Group item);
         void Save(Group item);

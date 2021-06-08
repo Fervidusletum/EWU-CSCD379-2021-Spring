@@ -2,6 +2,8 @@
 using SecretSanta.Data;
 using System.Linq;
 using System;
+using Microsoft.EntityFrameworkCore;
+using DbContext = SecretSanta.Data.DbContext;
 
 namespace SecretSanta.Business
 {
@@ -24,15 +26,14 @@ namespace SecretSanta.Business
             return item;
         }
 
+        // https://docs.microsoft.com/en-us/ef/core/querying/related-data/eager#eager-loading
         public User? GetItem(int id)
-        {
-            return Context.Users.FirstOrDefault<User>(u => u.Id == id);
-        }
+            => List().FirstOrDefault<User>(u => u.Id == id);
 
         public ICollection<User> List()
-        {
-            return Context.Users.ToList();
-        }
+            => Context.Users
+                .Include(user => user.Gifts)
+                .ToList();
 
         public bool Remove(int id)
         {

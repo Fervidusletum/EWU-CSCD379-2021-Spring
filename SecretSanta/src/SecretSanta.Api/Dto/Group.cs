@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace SecretSanta.Api.Dto
 {
@@ -21,9 +20,7 @@ namespace SecretSanta.Api.Dto
             };
             if (includeChildObjects)
             {
-                Console.WriteLine($"DTO: NUMBER OF USERS IS {group.Users.Count}");
-                Console.WriteLine($"DTO: NUMBER OF ASSIGNMENTS IS {group.Assignments.Count}");
-                foreach (Data.User? user in group.Users)
+                foreach(Data.User? user in group.Users)
                 {
                     if (User.ToDto(user) is { } dtoUser)
                     {
