@@ -18,22 +18,15 @@ namespace SecretSanta.Api.Tests.Controllers
         [TestMethod]
         public void Constructor_WithNullGroupRepository_ThrowException()
         {
-            var ex = Assert.ThrowsException<ArgumentNullException>(() => new GroupsController(null!, new TestableUserRepository(), null!));
+            var ex = Assert.ThrowsException<ArgumentNullException>(() => new GroupsController(null!, new TestableUserRepository()));
             Assert.AreEqual("repository", ex.ParamName);
         }
 
         [TestMethod]
         public void Constructor_WithNullUserRepository_ThrowException()
         {
-            var ex = Assert.ThrowsException<ArgumentNullException>(() => new GroupsController(new TestableGroupRepository(), null!, null!));
+            var ex = Assert.ThrowsException<ArgumentNullException>(() => new GroupsController(new TestableGroupRepository(), null!));
             Assert.AreEqual("userRepository", ex.ParamName);
-        }
-
-        [TestMethod]
-        public void Constructor_WithNullLogger_ThrowException()
-        {
-            var ex = Assert.ThrowsException<ArgumentNullException>(() => new GroupsController(new TestableGroupRepository(), new TestableUserRepository(), null!));
-            Assert.AreEqual("logger", ex.ParamName);
         }
 
         [TestMethod]

@@ -12,12 +12,10 @@ namespace SecretSanta.Api.Controllers
     public class UsersController : ControllerBase
     {
         private IUserRepository Repository { get; }
-        private ILogger Logger { get; }
 
-        public UsersController(IUserRepository repository, ILogger logger)
+        public UsersController(IUserRepository repository)
         {
             Repository = repository ?? throw new System.ArgumentNullException(nameof(repository));
-            Logger = logger?.ForContext<UsersController>() ?? throw new System.ArgumentNullException(nameof(logger));
         }
 
         [HttpGet]
@@ -70,7 +68,6 @@ namespace SecretSanta.Api.Controllers
                 return Ok();
             }
 
-            Logger.Information("Put: Could not find Id {Id} for {UserFN} {UserLN}", id, user?.FirstName ?? "NULL USER DTO", user?.LastName ?? "");
             return NotFound();
         }
     }

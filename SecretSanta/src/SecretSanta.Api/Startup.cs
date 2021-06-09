@@ -8,6 +8,7 @@ using SecretSanta.Data;
 using Microsoft.Extensions.Configuration;
 using System.Configuration;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using DbContext = SecretSanta.Data.DbContext;
 
 namespace SecretSanta.Api
@@ -16,18 +17,24 @@ namespace SecretSanta.Api
     {
         // This method gets called by the runtime. Use this method to add services to the container.
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
+        public IConfiguration Configuration { get; }
+
+        public Startup(IConfiguration config)
+            => Configuration = config;
+
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<ILogger>(Log.Logger);
+            services.AddLogging(builder => {
+                builder.AddSerilog(logger: Log.Logger);
+            });
             services.AddDbContext<DbContext>( options =>
             {
-                string dbpath = Program.Configuration.GetValue<string>("DbPath") ?? "";
-                string dbname = Program.Configuration.GetValue<string>("DbName") ?? "main.db";
-                options.UseSqlite($"Data Source={dbpath}{dbname}");
-                options.UseLoggerFactory(Microsoft.Extensions.Logging.LoggerFactory.Create( builder => 
+                options.UseSqlite($"Data Source={Configuration.GetConnectionString("DbConnection")}");
+                options.UseLoggerFactory(LoggerFactory.Create( builder => 
                         builder.AddSerilog(Log.Logger.ForContext<DbContext>().ForContext("Category", "Database"))
                 ));
             });
+            services.AddScoped<IGiftRepository, GiftRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IGroupRepository, GroupRepository>();
             services.AddControllers();
@@ -47,16 +54,6 @@ namespace SecretSanta.Api
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            /*
-            different method for setting up configuration
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(env.ContentRootPath)
-                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
-                .AddEnvironmentVariables();
-            Configuration = builder.Build();
-            */
-
             app.UseSerilogRequestLogging();
             if (env.IsDevelopment())
             {
