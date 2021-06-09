@@ -56,10 +56,6 @@ namespace SecretSanta.E2E.Tests
             await page.ClickAsync("text=Groups");
             button = await page.WaitForSelectorAsync("a:has-text('Create Group')");
             Assert.IsNotNull(button);
-
-            await page.ClickAsync("text=Gifts");
-            button = await page.WaitForSelectorAsync("a:has-text('Create Gift')");
-            Assert.IsNotNull(button);
         }
 
         [TestMethod]

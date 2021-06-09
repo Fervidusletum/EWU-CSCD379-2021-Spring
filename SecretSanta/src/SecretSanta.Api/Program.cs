@@ -37,12 +37,27 @@ namespace SecretSanta.Api
 
             Serilog.ILogger Logger = Log.Logger.ForContext<Program>();
 
+            if (args.Any(s => s.Contains("--list")))
+            {
+                Logger.Information("\n\n" +
+                    "   --setdb=\"path\\to\\database.db\"\n" +
+                    "       Sets the connection string for the database\n\n" +
+                    "   --setlog=\"path\\to\\log.txt\"\n" +
+                    "       Sets the logfile\n\n" +
+                    "   --DeploySampleData\n" +
+                    "       CLEARS database and repopulates with seed data\n");
+                Log.CloseAndFlush();
+                return;
+            }
+
+            Logger.Information("Use --list to display CLI args");
+
             try
             {
                 Logger.Information("Building host");
                 CreateHostBuilder(args)
                     .Build()
-                    .MigrateDatabase(args.Any(s => s.Contains("DeploySampleData")))
+                    .MigrateDatabase(args.Any(s => s.Contains("--DeploySampleData")))
                     .Run();
             }
             catch (Exception ex)
@@ -59,9 +74,9 @@ namespace SecretSanta.Api
             Host.CreateDefaultBuilder(args)
                 .ConfigureAppConfiguration((hostingContext, config) =>
                 {
-                    config.AddEnvironmentVariables();
                     config.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
                     config.AddJsonFile($"appsettings.{hostingContext.HostingEnvironment.EnvironmentName}.json", optional: true);
+                    config.AddEnvironmentVariables();
                     config.AddCommandLine(args, new Dictionary<string, string> {
                         { "--setdb", "ConnectionStrings:DbConnection" },
                         { "--setlog", "ConnectionStrings:LogConnection" }

@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Serilog;
 
 namespace SecretSanta.E2E.Tests
 {
@@ -140,6 +141,7 @@ namespace SecretSanta.E2E.Tests
                     .UseKestrel()
                     .UseSolutionRelativeContentRoot(Path.Combine("src", typeof(AStartup).Assembly.GetName().Name))
                     .UseStaticWebAssets()
+                    .UseSerilog()
                     .UseStartup<AStartup>()
                     .UseUrls($"https://127.0.0.1:0")) // :0 allows to choose a port automatically
                 .Build();
