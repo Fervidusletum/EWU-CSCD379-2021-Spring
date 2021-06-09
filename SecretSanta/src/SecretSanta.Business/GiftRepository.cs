@@ -25,8 +25,8 @@ namespace SecretSanta.Business
             return item;
         }
 
-        public Gift? GetItem(int id)
-            => List().FirstOrDefault<Gift>(g => g.Id == id);
+        public Gift? GetItem(int giftid)
+            => List().FirstOrDefault<Gift>(g => g.Id == giftid);
 
         public ICollection<Gift> List()
             => Context.Gifts.ToList();

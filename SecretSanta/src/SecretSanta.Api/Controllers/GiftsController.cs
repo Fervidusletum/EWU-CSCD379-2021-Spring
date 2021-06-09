@@ -18,8 +18,19 @@ namespace SecretSanta.Api.Controllers
             Repository = repository ?? throw new System.ArgumentNullException(nameof(repository));
         }
 
-        [HttpGet("{userid}")]
-        public IEnumerable<Dto.Gift?> Get(int userid)
+        [HttpGet("{giftid}")]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(Dto.Gift),(int)HttpStatusCode.OK)]
+        public ActionResult<Dto.Gift?> Get(int giftid)
+        {
+            Data.Gift? gift = Repository.GetItem(giftid);
+            if (gift is null) return NotFound();
+
+            return Dto.Gift.ToDto(gift);
+        }
+
+        [HttpGet("byuser/{userid}")]
+        public IEnumerable<Dto.Gift?> GetByUser(int userid)
             => Repository.List(userid).Select(g => Dto.Gift.ToDto(g));
 
         [HttpDelete("{giftid}")]
@@ -39,10 +50,11 @@ namespace SecretSanta.Api.Controllers
         [ProducesResponseType(typeof(Dto.Gift), (int)HttpStatusCode.OK)]
         public ActionResult<Dto.Gift?> Post([FromBody] Dto.Gift gift)
         {
+
             return Dto.Gift.ToDto(Repository.Create(Dto.Gift.FromDto(gift)!));
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("{giftid}")]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.OK)]

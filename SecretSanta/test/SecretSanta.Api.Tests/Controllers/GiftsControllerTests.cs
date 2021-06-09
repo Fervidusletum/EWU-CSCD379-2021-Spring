@@ -31,14 +31,15 @@ namespace SecretSanta.Api.Tests.Controllers
             {
                 Id = 42,
                 Title = "test",
-                Priority = 1
+                Priority = 1,
+                ReceiverId = 42
             };
             repository.Create(gift);
 
             HttpClient client = factory.CreateClient();
 
             //Act
-            List<Dto.Gift>? gifts = await client.GetFromJsonAsync<List<Dto.Gift>>("/api/gifts");
+            List<Dto.Gift>? gifts = await client.GetFromJsonAsync<List<Dto.Gift>>($"/api/gifts/byuser/{gift.ReceiverId}");
 
             //Assert
             Assert.AreEqual(1, gifts!.Count);

@@ -21,7 +21,7 @@ namespace SecretSanta.Data
                 {
                     ILogger logger = Log.Logger
                         .ForContext("SourceContext", $"SecretSanta.Data.{nameof(MigrationManager)}")
-                        .ForContext("Category", "Database");
+                        .ForContext("Category", "Startup Database");
                     try
                     {
                         if (reseed || (!context.Groups.Any() && !context.Users.Any()))
