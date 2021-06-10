@@ -33,6 +33,8 @@ namespace SecretSanta.Business
         public ICollection<User> List()
             => Context.Users
                 .Include(user => user.Gifts)
+                .Include(user => user.Groups)
+                .ThenInclude(group => group.Assignments)
                 .ToList();
 
         public bool Remove(int id)

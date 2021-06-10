@@ -1,5 +1,43 @@
+<!-- User Edit -->
 <section x-data="SecretSanta.createOrUpdateUser()" x-init="loadData()">
     @await Html.PartialAsync("_CreateOrEdit")
+    <section>
+        <label class="text-gray-500 font-bold text-right">Requested Gifts:</label>
+        <template x-for="(currentGift, index) in gifts" :key="index">
+            <section class="w-full sm:w-2/3">
+                <a :href="`https://localhost:5001/gifts/edit/${currentGift.id}`">
+                    <section class="border-gray-500 hover:shadow-xl border-2 p-6 m-5 rounded-xl flex flex-row justify-between">
+                        <div class="inline-block">Gift: <span x-text="currentGift.title"></span> <br />Priority: <span x-text="currentGift.priority"></span></div>
+                        <button class="-mt-6" @@click.prevent="deleteGift(currentGift)"><i class="fas fa-trash text-gray-700 hover:text-red-700"></i></button>
+                    </section>
+                </a>
+            </section>
+        </template>
+        <div class="pl-5"><a class="border-2 bg-green-400 border-green-800 hover:bg-green-600 py-2 px-4 rounded-xl" asp-controller="Gifts" asp-action="Create">Create a Gift</a></div>
+    </section>
+    <section class="pt-4">
+        <label class="text-gray-500 font-bold text-right">Gifting Assignments:</label>
+        <template x-for="(currentAssignment, index) in assignments" :key="index">
+            <section class="w-full sm:w-2/3">
+                <section class="border-gray-500 hover:shadow-xl border-2 p-6 m-5 rounded-xl flex flex-row justify-between">
+                    <div class="grid grid-cols-1">
+                        <div><label class="text-gray-500 font-bold text-right">Group: </label><span x-text="currentAssignment.forGroup?.name"></span></div>
+                        <div><label class="text-gray-500 font-bold text-right">Assignment: </label><span x-text="currentAssignment.receiver?.firstName"></span> <span x-text="currentAssignment.receiver?.lastName"></span></div>
+                        <div><label class="text-gray-500 font-bold text-right">
+                            Requested Gifts: </label>
+                            <template x-for="(currentRGift, gindex) in currentAssignment.requestedGifts" :key="gindex">
+                                <section class="grid-cols-1 grid-cols-1">
+                                    <section class="border-gray-500 hover:shadow-xl border-2 p-3 m-2 rounded-xl flex flex-row justify-between">
+                                        <div class="inline-block">Gift: <span x-text="currentRGift.title"></span> <br />Priority: <span x-text="currentRGift.priority"></span></div>
+                                    </section>
+                                </section>
+                            </template>
+                        </div>
+                    </div>
+                </section>
+            </section>
+        </template>
+    </section>
     <button class="border-2 bg-green-400 border-green-800 hover:bg-green-600 py-2 px-4 rounded-xl mr-3" @@click="update()">Update</button>
     <a class="inline-block border-2 bg-white border-green-400 hover:border-green-600 py-2 px-4 rounded-xl" asp-controller="Users" asp-action="Index">Cancel</a>
 </section>

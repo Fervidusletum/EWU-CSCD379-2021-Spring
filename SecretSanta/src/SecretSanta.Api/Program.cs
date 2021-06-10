@@ -25,7 +25,6 @@ namespace SecretSanta.Api
         {
             // adapted from https://nblumhardt.com/2019/10/serilog-in-aspnetcore-3/
             // part 1 of 2 stage init, used to log startup https://github.com/serilog/serilog-aspnetcore#two-stage-initialization
-
             Log.Logger = new LoggerConfiguration()
                 .Enrich.FromLogContext()
                 .Enrich.WithProperty("Category", "Startup")
@@ -57,7 +56,7 @@ namespace SecretSanta.Api
                 Logger.Information("Building host");
                 CreateHostBuilder(args)
                     .Build()
-                    .MigrateDatabase(args.Any(s => s.Contains("--DeploySampleData")))
+                    .MigrateDatabase(args.Any(s => s.Contains("DeploySampleData")))
                     .Run();
             }
             catch (Exception ex)

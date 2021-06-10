@@ -32,6 +32,23 @@ namespace SecretSanta.Api.Controllers
             return user;
         }
 
+        [HttpGet("{userid}/assignments")]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(IEnumerable<Dto.Assignment>),(int)HttpStatusCode.OK)]
+        public ActionResult<IEnumerable<Dto.Assignment?>> GetAssignments(int userid)
+        {
+            Data.User? user = Repository.GetItem(userid);
+            if (user is null) return NotFound();
+            
+            List<Dto.Assignment?> assignments = user.Groups
+                .SelectMany(group => group.Assignments, (group, assignment) => assignment)
+                .Where(assignment => assignment.GiverId == user.Id)
+                .Select(assignment => Dto.Assignment.ToDto(assignment))
+                .ToList();
+
+            return assignments;
+        }
+
         [HttpDelete("{id}")]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.OK)]

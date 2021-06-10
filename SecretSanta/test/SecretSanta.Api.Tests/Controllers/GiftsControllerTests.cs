@@ -163,7 +163,7 @@ namespace SecretSanta.Api.Tests.Controllers
 
             //Assert
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
-            var createdGift = repository.GetItem(42);
+            Data.Gift createdGift = repository.GetItem(42)!;
             Assert.AreEqual(42, createdGift.Id);
             Assert.AreEqual("test", createdGift.Title);
             Assert.AreEqual(1, createdGift.Priority);
@@ -195,7 +195,7 @@ namespace SecretSanta.Api.Tests.Controllers
 
             //Assert
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
-            var createdGift = repository.GetItem(42);
+            Data.Gift createdGift = repository.GetItem(42)!;
             Assert.AreEqual(42, createdGift.Id);
             Assert.AreEqual("updated", createdGift.Title);
             Assert.AreEqual(2, createdGift.Priority);
@@ -227,7 +227,7 @@ namespace SecretSanta.Api.Tests.Controllers
 
             //Assert
             Assert.AreEqual(HttpStatusCode.NotFound, response.StatusCode);
-            var createdGift = repository.GetItem(42);
+            Data.Gift createdGift = repository.GetItem(42)!;
             Assert.AreEqual(42, createdGift.Id);
             Assert.AreEqual("test", createdGift.Title);
             Assert.AreEqual(1, createdGift.Priority);

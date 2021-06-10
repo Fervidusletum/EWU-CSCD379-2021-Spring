@@ -162,7 +162,7 @@ namespace SecretSanta.Api.Tests.Controllers
 
             //Assert
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
-            var createdUser = repository.GetItem(42);
+            Data.User createdUser = repository.GetItem(42)!;
             Assert.AreEqual(42, createdUser.Id);
             Assert.AreEqual("John", createdUser.FirstName);
             Assert.AreEqual("Smith", createdUser.LastName);
@@ -192,7 +192,7 @@ namespace SecretSanta.Api.Tests.Controllers
 
             //Assert
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
-            var createdUser = repository.GetItem(42);
+            Data.User createdUser = repository.GetItem(42)!;
             Assert.AreEqual(42, createdUser.Id);
             Assert.AreEqual("Jane", createdUser.FirstName);
             Assert.AreEqual("Doe", createdUser.LastName);
@@ -222,7 +222,7 @@ namespace SecretSanta.Api.Tests.Controllers
 
             //Assert
             Assert.AreEqual(HttpStatusCode.NotFound, response.StatusCode);
-            var createdUser = repository.GetItem(42);
+            Data.User createdUser = repository.GetItem(42)!;
             Assert.AreEqual(42, createdUser.Id);
             Assert.AreEqual("John", createdUser.FirstName);
             Assert.AreEqual("Smith", createdUser.LastName);
