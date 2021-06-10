@@ -24,10 +24,10 @@ namespace SecretSanta.E2E.Tests
             {
                 Headless = true
             });
+            var context = await browser.NewContextAsync(ignoreHTTPSErrors: true);
+            var page = await context.NewPageAsync();
 
-            var page = await browser.NewPageAsync();
             var response = await page.GoToAsync(localhost);
-
             Assert.IsTrue(response.Ok);
 
             var headerContent = await page.GetTextContentAsync("body > header > div > a");
@@ -43,10 +43,10 @@ namespace SecretSanta.E2E.Tests
             {
                 Headless = true
             });
+            var context = await browser.NewContextAsync(ignoreHTTPSErrors: true);
+            var page = await context.NewPageAsync();
 
-            var page = await browser.NewPageAsync();
             var response = await page.GoToAsync(localhost);
-
             Assert.IsTrue(response.Ok);
 
             await page.ClickAsync("text=Users");

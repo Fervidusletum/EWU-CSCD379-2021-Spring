@@ -1,0 +1,64 @@
+# Docs for the Azure Web Apps Deploy action: https://go.microsoft.com/fwlink/?linkid=2134798
+# More GitHub Actions for Azure: https://go.microsoft.com/fwlink/?linkid=2135048
+
+name: Deploy
+  
+on:
+  push:
+    branches: [ Assignment* ]
+  pull_request:
+    branches: [ Assignment* ]
+
+jobs:
+  deploy:
+    #needs: build
+    name: Deploy
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ./SecretSanta/
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.x
+      
+    - name: Npm Build
+      working-directory: ./SecretSanta/src/SecretSanta.Web/
+      run: |
+        npm install
+        npm run build:prod
+    
+    - name: Restore dependencies
+      run: dotnet restore
+      
+    - name: Build
+      run: dotnet build --no-restore --configuration Release
+
+    - name: Publish Api
+      working-directory: ./SecretSanta/src/SecretSanta.Api/
+      run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/binApiSecretSanta-FV
+
+    - name: Publish Web
+      working-directory: ./SecretSanta/src/SecretSanta.Web/
+      run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/binWebSecretSanta-FV
+
+    - name: Deploy Api to Azure
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: Api-SecretSanta-FV
+        slot-name: Production
+        publish-profile: ${{ secrets.AZURE_APIAPP_PUBLISH_PROFILE }}
+        package: ${{env.DOTNET_ROOT}}/binApiSecretSanta-FV
+
+    - name: Deploy Web to Azure
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: SecretSanta-FV
+        slot-name: Production
+        publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_3D4EACB8F956449FA2F0BE074D105EC5 }}
+        package: ${{env.DOTNET_ROOT}}/binWebSecretSanta-FV
