@@ -59,6 +59,7 @@ namespace SecretSanta.E2E.Tests
         }
 
         [TestMethod]
+        [Ignore]
         public async Task CreateGift()
         {
             var localhost = _Server.WebRootUri.AbsoluteUri.Replace("127.0.0.1", "localhost");
@@ -93,6 +94,7 @@ namespace SecretSanta.E2E.Tests
         }
 
         [TestMethod]
+        [Ignore]
         public async Task ModifyLastGift()
         {
             var localhost = _Server.WebRootUri.AbsoluteUri.Replace("127.0.0.1", "localhost");
@@ -123,6 +125,7 @@ namespace SecretSanta.E2E.Tests
         }
 
         [TestMethod]
+        [Ignore]
         public async Task DeleteLastGift()
         {
             var localhost = _Server.WebRootUri.AbsoluteUri.Replace("127.0.0.1", "localhost");

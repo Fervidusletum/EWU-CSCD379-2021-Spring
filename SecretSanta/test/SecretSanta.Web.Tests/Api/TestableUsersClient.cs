@@ -77,5 +77,15 @@ namespace SecretSanta.Web.Tests.Api
         {
             throw new NotImplementedException();
         }
+
+        public Task<ICollection<Assignment>> GetAssignmentsAsync(int userid)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<ICollection<Assignment>> GetAssignmentsAsync(int userid, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
