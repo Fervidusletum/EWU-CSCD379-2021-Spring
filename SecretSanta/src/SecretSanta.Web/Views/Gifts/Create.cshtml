@@ -1,8 +1,6 @@
-<!-- Gift Create -->
-@model GiftViewModel
 
-<form asp-controller="Gifts" asp-action="Create" method="post">
+<section x-data="SecretSanta.createOrUpdateGift()" x-init="initNewGift()">
     @await Html.PartialAsync("_CreateOrEdit")
-    <button class="border-2 bg-green-400 border-green-800 hover:bg-green-600 py-2 px-4 rounded-xl mr-3">Create</button>
-    <a class="inline-block border-2 bg-white border-green-400 hover:border-green-600 py-2 px-4 rounded-xl" asp-controller="Gifts" asp-action="Index">Cancel</a>
-</form>
+    <button class="border-2 bg-green-400 border-green-800 hover:bg-green-600 py-2 px-4 rounded-xl mr-3" @@click="create()">Create</button>
+    <a :href="`https://localhost:5001/users/edit/${gift.receiverId}`" class="inline-block border-2 bg-white border-green-400 hover:border-green-600 py-2 px-4 rounded-xl">Cancel</a>
+</section>

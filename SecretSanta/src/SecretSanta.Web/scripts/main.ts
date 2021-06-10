@@ -33,6 +33,11 @@ export function setupNav() {
 export function createOrUpdateGift() {
     return {
         gift: {} as Gift,
+        async initNewGift() {
+            const pathnameSplit = window.location.pathname.split('/');
+            const id = pathnameSplit[pathnameSplit.length - 1];
+            this.gift.receiverId = +id;
+        },
         async create() {
             try {
                 const client = new GiftsClient(apiHost);
@@ -74,13 +79,6 @@ export function setupUsers() {
             if (confirm(`Are you sure you want to delete ${currentUser.firstName} ${currentUser.lastName}?`)) {
                 var client = new UsersClient(apiHost);
                 await client.delete(currentUser.id);
-                await this.loadUsers();
-            }
-        },
-        async deleteGift(currentGift: Gift) {
-            if (confirm(`Are you sure you want to delete ${currentGift.title}?`)) {
-                var client = new GiftsClient(apiHost);
-                await client.delete(currentGift.id);
                 await this.loadUsers();
             }
         },
@@ -130,6 +128,13 @@ export function createOrUpdateUser() {
                 this.gifts = await gclient.getByUser(+id) || [];
             } catch (error) {
                 console.log(error);
+            }
+        },
+        async deleteGift(currentGift: Gift) {
+            if (confirm(`Are you sure you want to delete ${currentGift.title}?`)) {
+                var client = new GiftsClient(apiHost);
+                await client.delete(currentGift.id);
+                await this.loadData();
             }
         }
     }

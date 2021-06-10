@@ -1,34 +1,27 @@
-<!-- Gift Create/Edit Common -->
-@model GiftViewModel
 
-<div asp-validation-summary="All"></div>
 <div class="mb-6">
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
-            <label class="text-gray-500 font-bold text-right" asp-for="Title"></label>
-            <input class="w-full border-b-2 border-green-300 focus:border-green-600 focus:ring-transparent focus:outline-none" type="text" asp-for="Title" />
+            <label class="text-gray-500 font-bold text-right" for="Title">Title</label>
+            <input class="w-full border-b-2 border-green-300 focus:border-green-600 focus:ring-transparent focus:outline-none"
+                   type="text" id="Title" name="Title" for="Title" x-model="gift.title" />
         </div>
         <div>
-            <label class="text-gray-500 font-bold text-right" asp-for="Description"></label>
-            <input class="w-full border-b-2 border-green-300 focus:border-green-600 focus:ring-transparent focus:outline-none" type="text" asp-for="Description" />
-        </div>
-    </div>
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div>
-            <label class="text-gray-500 font-bold text-right" asp-for="Url"></label>
-            <input class="w-full border-b-2 border-green-300 focus:border-green-600 focus:ring-transparent focus:outline-none" type="text" asp-for="Url" />
-        </div>
-        <div>
-            <label class="text-gray-500 font-bold text-right" asp-for="Priority"></label>
-            <input class="w-full border-b-2 border-green-300 focus:border-green-600 focus:ring-transparent focus:outline-none" type="text" asp-for="Priority" />
+            <label class="text-gray-500 font-bold text-right" for="Description">Description</label>
+            <input class="w-full border-b-2 border-green-300 focus:border-green-600 focus:ring-transparent focus:outline-none"
+                   type="text" id="Description" name="Description" for="Description" x-model="gift.description" />
         </div>
     </div>
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
-            <label class="text-gray-500 font-bold text-right" asp-for="UserId"></label>
-            <select class="w-full border-b-2 border-green-300 focus:border-green-600 focus:ring-transparent focus:outline-none" asp-for="UserId" asp-items="@(new SelectList(MockData.Users, "Id", "FullName"))">
-                <option>Please select one</option>
-            </select>
+            <label class="text-gray-500 font-bold text-right" for="Url">Url</label>
+            <input class="w-full border-b-2 border-green-300 focus:border-green-600 focus:ring-transparent focus:outline-none"
+                   type="text" id="Url" name="Url" for="Url" x-model="gift.url" />
+        </div>
+        <div>
+            <label class="text-gray-500 font-bold text-right" for="Priority">Priority</label>
+            <input class="w-full border-b-2 border-green-300 focus:border-green-600 focus:ring-transparent focus:outline-none"
+                   type="text" id="Priority" name="Priority" for="Priority" x-model="gift.priority" />
         </div>
     </div>
 </div>
