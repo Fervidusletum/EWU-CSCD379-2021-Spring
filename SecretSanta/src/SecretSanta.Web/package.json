@@ -2,6 +2,10 @@
   "name": "secretsanta.web",
   "version": "1.0.0",
   "description": "",
+  "engines": {
+    "node": "14",
+    "npm": "6"
+  },
   "scripts": {
     "build:prod": "run-script-os",
     "build:dev": "webpack --mode development --watch",
